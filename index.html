@@ -4,11 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <!-- 禁用浏览器自动缩放、优化移动端渲染 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <title>昊</title>
-  <!-- 预加载优化 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -37,12 +35,8 @@
       box-sizing: border-box;
     }
 
-    /* 系统级减动效适配 */
     @media (prefers-reduced-motion: reduce) {
-      * {
-        animation: none !important;
-        transition: none !important;
-      }
+      * { animation: none !important; transition: none !important; }
       #particle-canvas { display: none; }
     }
 
@@ -57,7 +51,6 @@
       align-items: center;
       justify-content: center;
       padding: 2rem 1.5rem;
-      /* 全局硬件加速，提升图层渲染 */
       transform: translateZ(0);
       -webkit-transform: translateZ(0);
       backface-visibility: hidden;
@@ -68,13 +61,11 @@
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      /* 强制独立图层 + 硬件加速 */
       transform: translateZ(0);
       -webkit-transform: translateZ(0);
       backface-visibility: hidden;
       will-change: contents;
       image-rendering: optimizeSpeed;
-      /* 关闭抗锯齿，大幅提升绘制速度 */
       -webkit-font-smoothing: none;
     }
 
@@ -158,7 +149,7 @@
     }
     .tagline i { color: var(--color-neon); font-size: 1rem; }
 
-    .social-links { display: flex; gap: 1.5rem; font-size: 1.8rem; }
+    .social-links { display: flex; gap: 1.5rem; align-items: center; font-size: 1.8rem; }
     .social-links a {
       color: #ccd6f6;
       transition: var(--transition-base);
@@ -316,6 +307,48 @@
       box-shadow: 0 0 18px var(--color-neon);
     }
 
+    /* 时间线样式 */
+    .timeline-section {
+      margin-top: 0.5rem;
+    }
+    .timeline-container {
+      position: relative;
+      padding-left: 30px;
+    }
+    .timeline-line {
+      position: absolute;
+      left: 12px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(255,255,255,0.3);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -22px;
+      top: 6px;
+      width: 24px;
+      height: 24px;
+      background: #ffb000;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      box-shadow: 0 0 10px rgba(255,176,0,0.6);
+    }
+    .timeline-content {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .timeline-content p {
+      margin: 0;
+      color: #e0e7ff;
+      line-height: 1.6;
+    }
+
     footer {
       margin-top: 1rem;
       text-align: center;
@@ -327,7 +360,6 @@
       .blog-container { padding: 2rem 1.5rem; }
       .profile-header { flex-direction: column; align-items: flex-start; }
       .intro-text h1 { font-size: 2rem; }
-      /* 移动端进一步减少粒子数量 */
     }
   </style>
 </head>
@@ -339,7 +371,7 @@
       <div class="avatar-section">
         <div class="avatar"><i class="fas fa-ghost"></i></div>
         <div class="intro-text">
-          <h1>粒梅LOM</h1>
+          <h1>昊</h1>
           <div class="tagline">
             <i class="fas fa-map-pin"></i> 摆烂的程序员
             <i class="fas fa-circle" style="font-size: 0.4rem; color: #0ff;"></i>
@@ -347,18 +379,25 @@
           </div>
         </div>
       </div>
+      <!-- QQ图标：手机唤起资料卡，电脑跳空间 -->
       <div class="social-links">
-        <a href="#" aria-label="Github"><i class="fab fa-github"></i></a>
-        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" aria-label="Linkedin"><i class="fab fa-linkedin-in"></i></a>
-        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+        <a href="mqq://im/chat?chat_type=wpa&uin=1058542436" aria-label="QQ" onclick="return openQQ(this.href);">
+          <i class="fab fa-qq"></i>
+        </a>
       </div>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-number">粒梅LOM后台</div><div class="stat-label">项目（后台项目）</div></div>
       <div class="stat-card"><div class="stat-number">11392</div><div class="stat-label">注册用户</div></div>
-      <div class="stat-card"><div class="stat-number">定制APP</div><div class="stat-label">QQ:1058542436</div></div>
+      <!-- 定制APP：点击跳QQ个人主页（资料卡/空间） -->
+      <a href="mqq://im/chat?chat_type=wpa&uin=1058542436" 
+         onclick="return openQQ(this.href);" 
+         class="stat-card" 
+         style="text-decoration:none;">
+        <div class="stat-number">定制APP</div>
+        <div class="stat-label">QQ:1058542436</div>
+      </a>
       <div class="stat-card"><div class="stat-number">∞</div><div class="stat-label">下载后台</div></div>
     </div>
 
@@ -367,7 +406,7 @@
       <div class="posts-grid">
         <article class="post-card">
           <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
-          <h3 class="post-title">Java/C++/PHP</h3>
+          <h3 class="post-title">Java/C++/Python/PHP</h3>
           <p class="post-excerpt">
 •使用Java语言独立开发过多个Android端原生项目...</p>
           <button class="read-more">阅读全部 <i class="fas fa-arrow-right"></i></button>
@@ -378,11 +417,61 @@
           <p class="post-excerpt">粒梅LOM后台是一款轻量级后台管理应用，轻量易上手，小白大佬都能使用，包含众多强大的功能，运行稳定。并且还包含iApp、Lua等语言的对接教学、实例源码，以及各种实战与基础教学，在使用的同时还能学习，甚至可以与广大用户进行交流。</p>
           <button class="read-more">下载 <i class="fas fa-arrow-right"></i></button>
         </article>
-        <article class="post-card">
-          <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
-          <h3 class="post-title">相关经历</h3>
-          <p class="post-excerpt">昊</p>
-          <button class="read-more">阅读全部 <i class="fas fa-arrow-right"></i></button>
+        <!-- 替换为时间线样式的相关经历 -->
+        <article class="post-card timeline-section">
+          <div class="post-date"><i class="far fa-calendar-alt"></i> 相关经历</div>
+          <div class="timeline-container">
+            <div class="timeline-line"></div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <p>2020年在朋友的介绍下第一次接触编程，学习了C语言。</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <p>2021年第一次接触手机编程iApp、lua，从此对软件开发感兴趣</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <p>2022年学习了Java、PHP语言，并且开始开发后端，于四月份开发第一个独立项目“粒梅LOM”。从此进入软件开发行业</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <p>2023年学习了html、css、js语言，开始着力于网页开发，向全栈工程师方向迈进。</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <p>2024年学习了C++语言。</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <p>2025年着力于Netty、Swoole等即时通讯技术研究，开展了流式传输、通话功能、联网游戏交互等技术模块 同年开发“粒梅LOM后台”项目。</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <p>2026年未来将所有项目以最新架构开发</p>
+              </div>
+            </div>
+          </div>
         </article>
       </div>
     </section>
@@ -406,10 +495,19 @@
   </div>
 
   <script>
+    // 手机唤起QQ资料卡，电脑自动跳QQ空间
+    function openQQ(url){
+      if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+        window.location.href=url;
+      }else{
+        window.open('https://user.qzone.qq.com/1058542436','_blank');
+      }
+      return false;
+    }
+
     (function() {
       const canvas = document.getElementById('particle-canvas');
       const ctx = canvas.getContext('2d');
-      // 关闭图像平滑、抗锯齿，优先速度
       ctx.imageSmoothingEnabled = false;
       ctx.webkitImageSmoothingEnabled = false;
       ctx.mozImageSmoothingEnabled = false;
@@ -420,7 +518,6 @@
       let rafId = null;
       let isRunning = true;
 
-      // 分设备动态配置：移动端/低配机进一步降负载
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const CONFIG = {
         particleCount: isMobile ? 30 : 45,
@@ -429,13 +526,11 @@
         mouseRadius: 70,
         mouseForce: 0.02,
         drawLineStep: 3,
-        // 帧率限制：强制30帧，降低CPU占用
         fps: 30,
         fpsInterval: 1000 / 30,
         then: performance.now()
       };
 
-      // 防抖 resize + 节流，避免频繁重绘
       let resizeTimer;
       function resizeCanvas() {
         width = window.innerWidth;
@@ -444,7 +539,6 @@
         canvas.height = height;
       }
 
-      // 粒子对象池优化：复用对象，避免频繁创建销毁
       class Particle {
         constructor() {
           this.x = 0;
@@ -465,7 +559,6 @@
         update() {
           this.x += this.vx;
           this.y += this.vy;
-          // 边界回弹
           if (this.x <= 0 || this.x >= width) this.vx *= -1;
           if (this.y <= 0 || this.y >= height) this.vy *= -1;
         }
@@ -477,7 +570,6 @@
         }
       }
 
-      // 初始化粒子池
       function initParticles() {
         particles = [];
         for (let i = 0; i < CONFIG.particleCount; i++) {
@@ -487,7 +579,6 @@
         }
       }
 
-      // 预计算连线逻辑，减少每帧运算
       function drawLines() {
         const len = particles.length;
         const limit = CONFIG.connectDistance;
@@ -497,7 +588,6 @@
             const p2 = particles[j];
             const dx = p1.x - p2.x;
             const dy = p1.y - p2.y;
-            // 先用粗略判断过滤，减少 hypot 高精度计算
             if (dx * dx + dy * dy > limit * limit) continue;
 
             const dist = Math.hypot(dx, dy);
@@ -512,7 +602,6 @@
         }
       }
 
-      // 鼠标移动 高强度节流
       let mouseTimer = null;
       window.addEventListener('mousemove', (e) => {
         if (mouseTimer) return;
@@ -523,12 +612,10 @@
         }, 32);
       });
 
-      // 主动画 + 帧率锁定
       function animate(now) {
         if (!isRunning) return;
         rafId = requestAnimationFrame(animate);
 
-        // 严格限制帧率
         const elapsed = now - CONFIG.then;
         if (elapsed < CONFIG.fpsInterval) return;
         CONFIG.then = now - (elapsed % CONFIG.fpsInterval);
@@ -536,12 +623,10 @@
         ctx.clearRect(0, 0, width, height);
         const len = particles.length;
 
-        // 批量更新+绘制粒子
         for (let i = 0; i < len; i++) {
           const p = particles[i];
           p.update();
 
-          // 鼠标引力
           const dx = mouseX - p.x;
           const dy = mouseY - p.y;
           const distSq = dx * dx + dy * dy;
@@ -559,7 +644,6 @@
         drawLines();
       }
 
-      // 窗口防抖
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
@@ -568,7 +652,6 @@
         }, 300);
       });
 
-      // 页面可见性控制：切后台彻底暂停
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
           isRunning = false;
@@ -580,14 +663,12 @@
         }
       });
 
-      // 页面卸载：销毁动画，释放资源
       window.addEventListener('beforeunload', () => {
         isRunning = false;
         cancelAnimationFrame(rafId);
         particles.length = 0;
       });
 
-      // 启动
       resizeCanvas();
       initParticles();
       rafId = requestAnimationFrame(animate);
