@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <!-- 禁用浏览器自动缩放、优化移动端渲染 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>昊的博客</title>
+  <!-- 预加载优化 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --color-neon: #00ffff;
+      --color-neon-light: #4facfe;
+      --color-purple: #a855f7;
+      --color-bg-dark: #03050a;
+      --color-bg-card: rgba(10, 20, 40, 0.55);
+      --color-card-light: rgba(8, 18, 40, 0.6);
+      --color-text-primary: #e0e7ff;
+      --color-text-secondary: #b4c8ff;
+      --radius-xl: 3.5rem;
+      --radius-lg: 2rem;
+      --blur-base: 12px;
+      --blur-heavy: 20px;
+      --transition-base: 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* 系统级减动效适配 */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+      #particle-canvas { display: none; }
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: radial-gradient(circle at 20% 30%, #0a0f1e, var(--color-bg-dark));
+      min-height: 100vh;
+      color: var(--color-text-primary);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      /* 全局硬件加速，提升图层渲染 */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      /* 强制独立图层 + 硬件加速 */
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+      will-change: contents;
+      image-rendering: optimizeSpeed;
+      /* 关闭抗锯齿，大幅提升绘制速度 */
+      -webkit-font-smoothing: none;
+    }
+
+    .blog-container {
+      position: relative;
+      z-index: 10;
+      max-width: 1100px;
+      width: 100%;
+      background: var(--color-bg-card);
+      backdrop-filter: blur(var(--blur-heavy));
+      -webkit-backdrop-filter: blur(var(--blur-heavy));
+      border-radius: var(--radius-xl);
+      padding: 2.8rem 2.5rem;
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(0, 255, 255, 0.3), 0 0 30px rgba(0, 180, 255, 0.5);
+      transition: var(--transition-base);
+      display:flex;flex-direction:column;gap:2.5rem;
+      will-change: transform;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+    .blog-container:hover {
+      box-shadow: 0 40px 70px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(0, 255, 200, 0.5), 0 0 60px rgba(0, 200, 255, 0.7);
+    }
+
+    .profile-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .avatar-section {
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+    }
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-neon), var(--color-neon-light));
+      display: grid;
+      place-items: center;
+      font-size: 3.5rem;
+      color: #fff;
+      box-shadow: 0 0 35px var(--color-neon), 0 10px 25px rgba(0,0,0,0.6);
+      border: 3px solid rgba(255,255,255,0.5);
+      transition: transform 0.4s ease;
+      will-change: transform;
+      transform: translateZ(0);
+      overflow: hidden;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .avatar:hover { transform: rotate(5deg) scale(1.05); }
+
+    .intro-text h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #a0f0ff, #6b8cff, var(--color-purple));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: 2px;
+      text-shadow: 0 0 25px #3b82f6;
+    }
+    .tagline {
+      font-size: 1.2rem;
+      color: var(--color-text-secondary);
+      margin-top: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+    .tagline i { color: var(--color-neon); font-size: 1rem; }
+
+    .social-links { display: flex; gap: 1.5rem; font-size: 1.8rem; }
+    .social-links a {
+      color: #ccd6f6;
+      transition: var(--transition-base);
+      text-decoration: none;
+      will-change: transform;
+    }
+    .social-links a:hover {
+      color: var(--color-neon);
+      transform: translateY(-4px);
+      text-shadow: 0 0 20px var(--color-neon), 0 0 8px var(--color-neon);
+    }
+
+    .stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: space-between;
+      margin: 0.5rem 0 1rem;
+    }
+    .stat-card {
+      flex: 1 1 150px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(var(--blur-base));
+      -webkit-backdrop-filter: blur(var(--blur-base));
+      border-radius: var(--radius-lg);
+      padding: 1.2rem 1.8rem;
+      text-align: center;
+      border: 1px solid rgba(0, 255, 255, 0.35);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+      transition: var(--transition-base);
+      will-change: transform;
+    }
+    .stat-card:hover {
+      background: rgba(0, 255, 255, 0.1);
+      border-color: var(--color-neon);
+      transform: translateY(-5px);
+    }
+    .stat-number {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(to top, #fff, #a5f0ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .stat-label {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      color: #8ba4ff;
+      margin-top: 0.3rem;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: #b6e6ff;
+      letter-spacing: 1px;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.8rem;
+      margin-top: 0.5rem;
+    }
+    .post-card {
+      background: var(--color-card-light);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem;
+      border: 1px solid rgba(64, 224, 255, 0.3);
+      box-shadow: 0 15px 30px -10px #000;
+      transition: all 0.35s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      will-change: transform;
+    }
+    .post-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--color-neon);
+      box-shadow: 0 0 35px #00a6ff, 0 20px 35px rgba(0,0,0,0.8);
+      background: rgba(15, 30, 60, 0.7);
+    }
+
+    .post-date {
+      font-size: 0.8rem;
+      color: #7aa9ff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .post-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #f0f9ff;
+      line-height: 1.3;
+    }
+    .post-excerpt {
+      color: #b0c6e0;
+      font-size: 0.95rem;
+      flex: 1;
+    }
+    .read-more {
+      align-self: flex-start;
+      background: transparent;
+      border: 1px solid var(--color-neon);
+      color: var(--color-neon);
+      padding: 0.5rem 1.2rem;
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      transition: var(--transition-base);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-transform: uppercase;
+      will-change: transform;
+    }
+    .read-more:hover {
+      background: var(--color-neon);
+      color: #020617;
+      box-shadow: 0 0 25px var(--color-neon);
+    }
+
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    .skill-tag {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 255, 255, 0.5);
+      border-radius: var(--radius-lg);
+      padding: 0.4rem 1.2rem;
+      font-size: 0.8rem;
+      color: #cbd5ff;
+      transition: var(--transition-base);
+      will-change: transform;
+    }
+    .skill-tag:hover {
+      background: var(--color-neon);
+      color: #000;
+      border-color: var(--color-neon);
+      box-shadow: 0 0 18px var(--color-neon);
+    }
+
+    footer {
+      margin-top: 1rem;
+      text-align: center;
+      color: #5f7bb0;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 650px) {
+      .blog-container { padding: 2rem 1.5rem; }
+      .profile-header { flex-direction: column; align-items: flex-start; }
+      .intro-text h1 { font-size: 2rem; }
+      /* 移动端进一步减少粒子数量 */
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="blog-container">
+    <div class="profile-header">
+      <div class="avatar-section">
+        <div class="avatar"><i class="fas fa-ghost"></i></div>
+        <div class="intro-text">
+          <h1>粒梅LOM</h1>
+          <div class="tagline">
+            <i class="fas fa-map-pin"></i> 摆烂的程序员
+            <i class="fas fa-circle" style="font-size: 0.4rem; color: #0ff;"></i>
+            <span>学习Python勿用于违法行为</span>
+          </div>
+        </div>
+      </div>
+      <div class="social-links">
+        <a href="#" aria-label="Github"><i class="fab fa-github"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="Linkedin"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-number">粒梅LOM后台</div><div class="stat-label">项目（后台项目）</div></div>
+      <div class="stat-card"><div class="stat-number">11392</div><div class="stat-label">注册用户</div></div>
+      <div class="stat-card"><div class="stat-number">定制APP</div><div class="stat-label">QQ:1058542436</div></div>
+      <div class="stat-card"><div class="stat-number">∞</div><div class="stat-label">下载后台</div></div>
+    </div>
+
+    <section>
+      <h2 class="section-title"><i class="fas fa-bolt" style="color: #0ff;"></i> 擅长语言</h2>
+      <div class="posts-grid">
+        <article class="post-card">
+          <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
+          <h3 class="post-title">Java/C++/PHP</h3>
+          <p class="post-excerpt">
+•使用Java语言独立开发过多个Android端原生项目</p>
+          <button class="read-more"> <i class="fas fa-arrow-right"></i></button>
+        </article>
+        <article class="post-card">
+          <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
+          <h3 class="post-title">粒梅LOM后台</h3>
+          <p class="post-excerpt">粒梅LOM后台是一款轻量级后台管理应用，轻量易上手，小白大佬都能使用，包含众多强大的功能，运行稳定。并且还包含iApp、Lua等语言的对接教学、实例源码，以及各种实战与基础教学，在使用的同时还能学习，甚至可以与广大用户进行交流。</p>
+          <button class="read-more">下载 <i class="fas fa-arrow-right"></i></button>
+        </article>
+        <article class="post-card">
+          <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
+          <h3 class="post-title">相关经历</h3>
+          <p class="post-excerpt">昊</p>
+          <button class="read-more">阅读全部 <i class="fas fa-arrow-right"></i></button>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title"><i class="fas fa-cube"></i> 技术</h2>
+      <div class="skills">
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">C++</span>
+        <span class="skill-tag">PHP</span>
+        <span class="skill-tag">HTML、CSS、JavaScript</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Unreal Engine</span>
+        <span class="skill-tag">Kotlin</span>
+        <span class="skill-tag">定制</span>
+        <span class="skill-tag">UI/UX</span>
+      </div>
+    </section>
+
+    <footer><i class="far fa-copyright"></i> 2026 粒梅LOM · 粒梅文化传媒有限公司</footer>
+  </div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      // 关闭图像平滑、抗锯齿，优先速度
+      ctx.imageSmoothingEnabled = false;
+      ctx.webkitImageSmoothingEnabled = false;
+      ctx.mozImageSmoothingEnabled = false;
+
+      let width, height;
+      let particles = [];
+      let mouseX = 0, mouseY = 0;
+      let rafId = null;
+      let isRunning = true;
+
+      // 分设备动态配置：移动端/低配机进一步降负载
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const CONFIG = {
+        particleCount: isMobile ? 30 : 45,
+        connectDistance: 90,
+        colors: ['#00ffff', '#4facfe', '#a855f7', '#2dd4bf'],
+        mouseRadius: 70,
+        mouseForce: 0.02,
+        drawLineStep: 3,
+        // 帧率限制：强制30帧，降低CPU占用
+        fps: 30,
+        fpsInterval: 1000 / 30,
+        then: performance.now()
+      };
+
+      // 防抖 resize + 节流，避免频繁重绘
+      let resizeTimer;
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      // 粒子对象池优化：复用对象，避免频繁创建销毁
+      class Particle {
+        constructor() {
+          this.x = 0;
+          this.y = 0;
+          this.vx = 0;
+          this.vy = 0;
+          this.radius = 0;
+          this.color = '';
+        }
+        reset() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+          this.radius = Math.random() * 1.5 + 0.8;
+          this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
+        }
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          // 边界回弹
+          if (this.x <= 0 || this.x >= width) this.vx *= -1;
+          if (this.y <= 0 || this.y >= height) this.vy *= -1;
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        }
+      }
+
+      // 初始化粒子池
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < CONFIG.particleCount; i++) {
+          const p = new Particle();
+          p.reset();
+          particles.push(p);
+        }
+      }
+
+      // 预计算连线逻辑，减少每帧运算
+      function drawLines() {
+        const len = particles.length;
+        const limit = CONFIG.connectDistance;
+        for (let i = 0; i < len; i += CONFIG.drawLineStep) {
+          const p1 = particles[i];
+          for (let j = i + 1; j < len; j += CONFIG.drawLineStep) {
+            const p2 = particles[j];
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            // 先用粗略判断过滤，减少 hypot 高精度计算
+            if (dx * dx + dy * dy > limit * limit) continue;
+
+            const dist = Math.hypot(dx, dy);
+            const alpha = 1 - dist / limit;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.3})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // 鼠标移动 高强度节流
+      let mouseTimer = null;
+      window.addEventListener('mousemove', (e) => {
+        if (mouseTimer) return;
+        mouseTimer = setTimeout(() => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          mouseTimer = null;
+        }, 32);
+      });
+
+      // 主动画 + 帧率锁定
+      function animate(now) {
+        if (!isRunning) return;
+        rafId = requestAnimationFrame(animate);
+
+        // 严格限制帧率
+        const elapsed = now - CONFIG.then;
+        if (elapsed < CONFIG.fpsInterval) return;
+        CONFIG.then = now - (elapsed % CONFIG.fpsInterval);
+
+        ctx.clearRect(0, 0, width, height);
+        const len = particles.length;
+
+        // 批量更新+绘制粒子
+        for (let i = 0; i < len; i++) {
+          const p = particles[i];
+          p.update();
+
+          // 鼠标引力
+          const dx = mouseX - p.x;
+          const dy = mouseY - p.y;
+          const distSq = dx * dx + dy * dy;
+          const radiusSq = CONFIG.mouseRadius * CONFIG.mouseRadius;
+
+          if (distSq < radiusSq && distSq > 0) {
+            const dist = Math.sqrt(distSq);
+            const force = (CONFIG.mouseRadius - dist) / CONFIG.mouseRadius;
+            p.vx += (dx / dist) * force * CONFIG.mouseForce;
+            p.vy += (dy / dist) * force * CONFIG.mouseForce;
+          }
+          p.draw();
+        }
+
+        drawLines();
+      }
+
+      // 窗口防抖
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          resizeCanvas();
+          initParticles();
+        }, 300);
+      });
+
+      // 页面可见性控制：切后台彻底暂停
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          isRunning = false;
+          cancelAnimationFrame(rafId);
+        } else {
+          isRunning = true;
+          CONFIG.then = performance.now();
+          rafId = requestAnimationFrame(animate);
+        }
+      });
+
+      // 页面卸载：销毁动画，释放资源
+      window.addEventListener('beforeunload', () => {
+        isRunning = false;
+        cancelAnimationFrame(rafId);
+        particles.length = 0;
+      });
+
+      // 启动
+      resizeCanvas();
+      initParticles();
+      rafId = requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>
