@@ -1,544 +1,1010 @@
-<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <title>昊</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    :root {
-      --color-neon: #00ffff;
-      --color-neon-light: #4facfe;
-      --color-purple: #a855f7;
-      --color-bg-card: rgba(255, 255, 255, 0.25);
-      --color-card-light: rgba(255, 255, 255, 0.2);
-      --color-text-primary: #0f172a;
-      --color-text-secondary: #1e293b;
-      --radius-xl: 3.5rem;
-      --radius-lg: 2rem;
-      --blur-base: 20px;
-      --blur-heavy: 35px;
-      --transition-base: 0.3s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>昊</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --color-neon: #00ffff;
+            --color-neon-light: #4facfe;
+            --color-purple: #a855f7;
+            --color-bg-card: rgba(255, 255, 255, 0.25);
+            --color-card-light: rgba(255, 255, 255, 0.2);
+            --color-text-primary: #0f172a;
+            --color-text-secondary: #1e293b;
+            --radius-xl: 3.5rem;
+            --radius-lg: 2rem;
+            --blur-base: 20px;
+            --blur-heavy: 35px;
+            --transition-base: 0.3s ease;
+            --red-packet-red: #d4343e;
+            --red-packet-dark: #a82028;
+            --red-packet-gold: #e8b84b;
+            --red-packet-gold-light: #f7d774;
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; transition: none !important; }
-      #particle-canvas { display: none; }
-    }
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+            #particle-canvas {
+                display: none;
+            }
+            .coin-particle {
+                animation: none !important;
+            }
+        }
 
-    body {
-      font-family: 'Space Grotesk', sans-serif;
-      min-height: 100vh;
-      color: var(--color-text-primary);
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1.5rem;
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
-      backface-visibility: hidden;
-    }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            color: var(--color-text-primary);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            transition: filter 0.3s ease;
+        }
 
-    .bg-layer {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 30%, #f5f3ff 70%, #ede9fe 100%);
-      overflow: hidden;
-    }
+        body.modal-open {
+            overflow: hidden;
+        }
 
-    .bg-layer::before,
-    .bg-layer::after,
-    .bg-text-1,
-    .bg-text-2,
-    .bg-text-3 {
-      position: absolute;
-      color: rgba(0, 0, 0, 0.03);
-      font-weight: 900;
-      text-transform: uppercase;
-      pointer-events: none;
-      user-select: none;
-    }
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 30%, #f5f3ff 70%, #ede9fe 100%);
+            overflow: hidden;
+        }
 
-    .bg-layer::before {
-      content: "昊";
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 15vw;
-      letter-spacing: 2rem;
-    }
+        .bg-layer::before,
+        .bg-layer::after,
+        .bg-text-1,
+        .bg-text-2,
+        .bg-text-3 {
+            position: absolute;
+            color: rgba(0, 0, 0, 0.03);
+            font-weight: 900;
+            text-transform: uppercase;
+            pointer-events: none;
+            user-select: none;
+        }
 
-    .bg-layer::after {
-      content: "UPSTREAM";
-      top: 55%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 8vw;
-      letter-spacing: 1rem;
-    }
+        .bg-layer::before {
+            content: "昊";
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15vw;
+            letter-spacing: 2rem;
+        }
 
-    .bg-text-1 {
-      content: "MEET IN WINTER";
-      top: 42%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 3vw;
-      letter-spacing: 0.5rem;
-    }
+        .bg-layer::after {
+            content: "UPSTREAM";
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8vw;
+            letter-spacing: 1rem;
+        }
 
-    .bg-text-2 {
-      content: "游戏可以改变生活";
-      top: 25%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.5vw;
-      letter-spacing: 0.2rem;
-    }
+        .bg-text-1 {
+            content: "MEET IN WINTER";
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3vw;
+            letter-spacing: 0.5rem;
+        }
 
-    .bg-text-3 {
-      content: "IN SEED TIME LEARN · IN HARVEST TEACH · IN WINTER ENJOY";
-      top: 48%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1vw;
-      letter-spacing: 0.1rem;
-    }
+        .bg-text-2 {
+            content: "游戏可以改变生活";
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5vw;
+            letter-spacing: 0.2rem;
+        }
 
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: rgba(255, 255, 255, 0.2);
-    }
+        .bg-text-3 {
+            content: "IN SEED TIME LEARN · IN HARVEST TEACH · IN WINTER ENJOY";
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1vw;
+            letter-spacing: 0.1rem;
+        }
 
-    #particle-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
-      backface-visibility: hidden;
-      will-change: contents;
-      image-rendering: optimizeSpeed;
-    }
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: rgba(255, 255, 255, 0.2);
+        }
 
-    .blog-container {
-      position: relative;
-      z-index: 10;
-      max-width: 1100px;
-      width: 100%;
-      background: var(--color-bg-card);
-      backdrop-filter: blur(var(--blur-heavy));
-      -webkit-backdrop-filter: blur(var(--blur-heavy));
-      border-radius: var(--radius-xl);
-      padding: 2.8rem 2.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.08), 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3);
-      transition: var(--transition-base);
-      display:flex;
-      flex-direction:column;
-      gap:2.5rem;
-      will-change: transform;
-      transform: translateZ(0);
-      backface-visibility: hidden;
-    }
-    .blog-container:hover {
-      box-shadow: 0 40px 70px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(255, 255, 255, 0.7), 0 0 60px rgba(255, 255, 255, 0.4);
-    }
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: contents;
+            image-rendering: optimizeSpeed;
+        }
 
-    .profile-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-    }
-    .avatar-section {
-      display: flex;
-      align-items: center;
-      gap: 1.8rem;
-      flex-wrap: wrap;
-    }
-    .avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--color-neon), var(--color-neon-light));
-      display: grid;
-      place-items: center;
-      font-size: 3.5rem;
-      color: #fff;
-      box-shadow: 0 0 35px rgba(0, 255, 255, 0.5), 0 10px 25px rgba(0,0,0,0.1);
-      border: 3px solid rgba(255,255,255,0.8);
-      transition: transform 0.4s ease;
-      will-change: transform;
-      transform: translateZ(0);
-      overflow: hidden;
-    }
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .avatar:hover { transform: rotate(5deg) scale(1.05); }
+        .blog-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            width: 100%;
+            background: var(--color-bg-card);
+            backdrop-filter: blur(var(--blur-heavy));
+            -webkit-backdrop-filter: blur(var(--blur-heavy));
+            border-radius: var(--radius-xl);
+            padding: 2.8rem 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.08), 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3);
+            transition: var(--transition-base);
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        .blog-container:hover {
+            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(255, 255, 255, 0.7), 0 0 60px rgba(255, 255, 255, 0.4);
+        }
 
-    .intro-text h1 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.8rem;
-      font-weight: 800;
-      background: linear-gradient(to right, #0f172a, #3b82f6, var(--color-purple));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: 2px;
-    }
-    .tagline {
-      font-size: 1.2rem;
-      color: var(--color-text-secondary);
-      margin-top: 0.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      flex-wrap: wrap;
-    }
-    .tagline i { color: #3b82f6; font-size: 1rem; }
+        .profile-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-neon), var(--color-neon-light));
+            display: grid;
+            place-items: center;
+            font-size: 3.5rem;
+            color: #fff;
+            box-shadow: 0 0 35px rgba(0, 255, 255, 0.5), 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.4s ease;
+            will-change: transform;
+            transform: translateZ(0);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
 
-    .social-links { display: flex; gap: 1.5rem; align-items: center; font-size: 1.8rem; }
-    .social-links a {
-      color: #475569;
-      transition: var(--transition-base);
-      text-decoration: none;
-      will-change: transform;
-    }
-    .social-links a:hover {
-      color: var(--color-neon);
-      transform: translateY(-4px);
-      text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-    }
+        .intro-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #0f172a, #3b82f6, var(--color-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--color-text-secondary);
+            margin-top: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+        }
+        .tagline i {
+            color: #3b82f6;
+            font-size: 1rem;
+        }
 
-    .stats-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: space-between;
-      margin: 0.5rem 0 1rem;
-    }
-    .stat-card {
-      flex: 1 1 150px;
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(var(--blur-base));
-      -webkit-backdrop-filter: blur(var(--blur-base));
-      border-radius: var(--radius-lg);
-      padding: 1.2rem 1.8rem;
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-      transition: var(--transition-base);
-      will-change: transform;
-    }
-    .stat-card:hover {
-      background: rgba(255, 255, 255, 0.45);
-      border-color: var(--color-neon);
-      transform: translateY(-5px);
-    }
-    .stat-number {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 700;
-      background: linear-gradient(to top, #0f172a, #3b82f6);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .stat-label {
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-size: 0.8rem;
-      color: #475569;
-      margin-top: 0.3rem;
-    }
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            font-size: 1.8rem;
+        }
+        .social-links a {
+            color: #475569;
+            transition: var(--transition-base);
+            text-decoration: none;
+            will-change: transform;
+            cursor: pointer;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .social-links a:hover {
+            color: var(--color-neon);
+            transform: translateY(-4px);
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        .social-links a .red-dot {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            width: 14px;
+            height: 14px;
+            background: #e74c3c;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            animation: dotPulse 2s infinite;
+            pointer-events: none;
+        }
+        @keyframes dotPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
+            }
+        }
 
-    .section-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.8rem;
-      margin-bottom: 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      color: #1e293b;
-      letter-spacing: 1px;
-    }
+        .stats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: space-between;
+            margin: 0.5rem 0 1rem;
+        }
+        .stat-card {
+            flex: 1 1 150px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(var(--blur-base));
+            -webkit-backdrop-filter: blur(var(--blur-base));
+            border-radius: var(--radius-lg);
+            padding: 1.2rem 1.8rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition-base);
+            will-change: transform;
+        }
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.45);
+            border-color: var(--color-neon);
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(to top, #0f172a, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .stat-label {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            color: #475569;
+            margin-top: 0.3rem;
+        }
 
-    .posts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.8rem;
-      margin-top: 0.5rem;
-    }
-    .post-card {
-      background: var(--color-card-light);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border-radius: var(--radius-lg);
-      padding: 1.6rem;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 0 15px 30px -10px rgba(0,0,0,0.05);
-      transition: all 0.35s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      will-change: transform;
-    }
-    .post-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      border-color: var(--color-neon);
-      box-shadow: 0 0 35px rgba(0, 166, 255, 0.2), 0 20px 35px rgba(0,0,0,0.1);
-      background: rgba(255, 255, 255, 0.35);
-    }
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #1e293b;
+            letter-spacing: 1px;
+        }
 
-    .post-date {
-      font-size: 0.8rem;
-      color: #475569;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .post-title {
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: #0f172a;
-      line-height: 1.3;
-    }
-    .post-excerpt {
-      color: #334155;
-      font-size: 0.95rem;
-      flex: 1;
-    }
-    .read-more {
-      align-self: flex-start;
-      background: transparent;
-      border: 1px solid var(--color-neon);
-      color: #0f172a;
-      padding: 0.5rem 1.2rem;
-      border-radius: var(--radius-lg);
-      font-weight: 600;
-      font-size: 0.8rem;
-      letter-spacing: 1px;
-      transition: var(--transition-base);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      text-transform: uppercase;
-      will-change: transform;
-    }
-    .read-more:hover {
-      background: var(--color-neon);
-      color: #fff;
-      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-    }
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.8rem;
+            margin-top: 0.5rem;
+        }
+        .post-card {
+            background: var(--color-card-light);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: var(--radius-lg);
+            padding: 1.6rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.05);
+            transition: all 0.35s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            will-change: transform;
+        }
+        .post-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--color-neon);
+            box-shadow: 0 0 35px rgba(0, 166, 255, 0.2), 0 20px 35px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.35);
+        }
 
-    .skills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      margin-top: 0.5rem;
-    }
-    .skill-tag {
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 255, 255, 0.4);
-      border-radius: var(--radius-lg);
-      padding: 0.4rem 1.2rem;
-      font-size: 0.8rem;
-      color: #1e293b;
-      transition: var(--transition-base);
-      will-change: transform;
-    }
-    .skill-tag:hover {
-      background: var(--color-neon);
-      color: #000;
-      border-color: var(--color-neon);
-      box-shadow: 0 0 18px rgba(0, 255, 255, 0.4);
-    }
+        .post-date {
+            font-size: 0.8rem;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .post-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0f172a;
+            line-height: 1.3;
+        }
+        .post-excerpt {
+            color: #334155;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+        .read-more {
+            align-self: flex-start;
+            background: transparent;
+            border: 1px solid var(--color-neon);
+            color: #0f172a;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: var(--transition-base);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-transform: uppercase;
+            will-change: transform;
+        }
+        .read-more:hover {
+            background: var(--color-neon);
+            color: #fff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+        }
 
-    .timeline-section {
-      margin-top: 0.5rem;
-    }
-    .timeline-container {
-      position: relative;
-      padding-left: 30px;
-    }
-    .timeline-line {
-      position: absolute;
-      left: 12px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: rgba(0,0,0,0.1);
-    }
-    .timeline-item {
-      position: relative;
-      margin-bottom: 1.5rem;
-    }
-    .timeline-dot {
-      position: absolute;
-      left: -22px;
-      top: 6px;
-      width: 24px;
-      height: 24px;
-      background: #ffb000;
-      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-      box-shadow: 0 0 10px rgba(255,176,0,0.4);
-    }
-    .timeline-content {
-      background: rgba(255,255,255,0.3);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 1rem 1.2rem;
-      border: 1px solid rgba(255,255,255,0.5);
-    }
-    .timeline-content p {
-      margin: 0;
-      color: #1e293b;
-      line-height: 1.6;
-    }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        .skill-tag {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: var(--radius-lg);
+            padding: 0.4rem 1.2rem;
+            font-size: 0.8rem;
+            color: #1e293b;
+            transition: var(--transition-base);
+            will-change: transform;
+        }
+        .skill-tag:hover {
+            background: var(--color-neon);
+            color: #000;
+            border-color: var(--color-neon);
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.4);
+        }
 
-    footer {
-      margin-top: 1rem;
-      text-align: center;
-      color: #475569;
-      font-size: 0.85rem;
-    }
+        .timeline-section {
+            margin-top: 0.5rem;
+        }
+        .timeline-container {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -22px;
+            top: 6px;
+            width: 24px;
+            height: 24px;
+            background: #ffb000;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            box-shadow: 0 0 10px rgba(255, 176, 0, 0.4);
+        }
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .timeline-content p {
+            margin: 0;
+            color: #1e293b;
+            line-height: 1.6;
+        }
 
-    @media (max-width: 650px) {
-      .blog-container { padding: 2rem 1.5rem; }
-      .profile-header { flex-direction: column; align-items: flex-start; }
-      .intro-text h1 { font-size: 2rem; }
-      .bg-layer::before { font-size: 20vw; letter-spacing: 1rem; }
-      .bg-layer::after { font-size: 12vw; letter-spacing: 0.5rem; }
-      .bg-text-1 { font-size: 5vw; }
-      .bg-text-2 { font-size: 3vw; }
-      .bg-text-3 { font-size: 2vw; }
-    }
-  </style>
+        footer {
+            margin-top: 1rem;
+            text-align: center;
+            color: #475569;
+            font-size: 0.85rem;
+        }
+
+        /* ==================== 红包弹窗样式 ==================== */
+        .red-packet-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .red-packet-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .red-packet-modal {
+            position: relative;
+            width: 340px;
+            max-width: 90vw;
+            background: linear-gradient(180deg, #c0392b 0%, #e74c3c 8%, #d4343e 15%, #b3202a 40%, #c0392b 55%, #a82028 100%);
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(180, 30, 30, 0.5), 0 0 0 4px rgba(232, 184, 75, 0.5), 0 0 0 8px rgba(200, 40, 40, 0.3), 0 0 80px rgba(255, 180, 50, 0.3);
+            padding: 0;
+            text-align: center;
+            transform: translateY(30px) scale(0.9);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: visible;
+            user-select: none;
+        }
+        .red-packet-overlay.active .red-packet-modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .red-packet-top-ornament {
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #f7d774 0%, #e8b84b 40%, #c8942a 100%);
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(200, 150, 40, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: ornamentBounce 2s infinite;
+        }
+        .red-packet-top-ornament::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 16px;
+            background: #c8942a;
+            clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+        }
+        @keyframes ornamentBounce {
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            30% {
+                transform: translateX(-50%) translateY(-6px);
+            }
+            50% {
+                transform: translateX(-50%) translateY(0);
+            }
+            70% {
+                transform: translateX(-50%) translateY(-3px);
+            }
+        }
+
+        .red-packet-inner {
+            padding: 2.5rem 1.8rem 2rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+
+        .red-packet-pattern {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.08;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 8px,
+                    rgba(255, 215, 120, 0.6) 8px,
+                    rgba(255, 215, 120, 0.6) 10px),
+                repeating-linear-gradient(-45deg,
+                    transparent,
+                    transparent 8px,
+                    rgba(255, 215, 120, 0.6) 8px,
+                    rgba(255, 215, 120, 0.6) 10px);
+            border-radius: 24px;
+        }
+
+        .red-packet-gold-border {
+            position: absolute;
+            inset: 10px;
+            border: 2px solid rgba(232, 184, 75, 0.35);
+            border-radius: 16px;
+            pointer-events: none;
+        }
+
+        .red-packet-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #f7d774;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 200, 60, 0.5);
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0.3rem;
+        }
+        .red-packet-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255, 220, 160, 0.9);
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .red-packet-open-btn {
+            position: relative;
+            z-index: 1;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 35%, #fde68a 0%, #f59e0b 40%, #d97706 100%);
+            border: 4px solid #fbbf24;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.7), 0 0 60px rgba(251, 191, 36, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #7c2d12;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            animation: btnGlow 2s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .red-packet-open-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 50px rgba(245, 158, 11, 0.9), 0 0 80px rgba(251, 191, 36, 0.6), 0 10px 25px rgba(0, 0, 0, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+        }
+        .red-packet-open-btn:active {
+            transform: scale(0.92);
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        @keyframes btnGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 30px rgba(245, 158, 11, 0.7), 0 0 60px rgba(251, 191, 36, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(245, 158, 11, 1), 0 0 90px rgba(251, 191, 36, 0.7), 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .red-packet-open-btn.opened {
+            animation: btnBurst 0.6s ease forwards;
+            pointer-events: none;
+        }
+        @keyframes btnBurst {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            40% {
+                transform: scale(1.3);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .red-packet-result {
+            position: relative;
+            z-index: 1;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            animation: resultFadeIn 0.6s ease forwards;
+        }
+        .red-packet-result.show {
+            display: flex;
+        }
+        @keyframes resultFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .red-packet-result-amount {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fde68a;
+            text-shadow: 0 0 30px rgba(255, 200, 50, 0.8), 0 4px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+        .red-packet-result-msg {
+            font-size: 1rem;
+            color: rgba(255, 220, 160, 0.95);
+            letter-spacing: 1px;
+            line-height: 1.5;
+        }
+        .red-packet-result-qq {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 30px;
+            padding: 0.6rem 1.4rem;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            letter-spacing: 1px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .red-packet-result-qq:hover {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .red-packet-result-qq i {
+            font-size: 1.2rem;
+        }
+
+        .red-packet-close {
+            position: absolute;
+            top: -14px;
+            right: -14px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            font-size: 1rem;
+            color: #555;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .red-packet-close:hover {
+            background: #f5f5f5;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 金币粒子 */
+        .coin-particle {
+            position: absolute;
+            z-index: 5;
+            pointer-events: none;
+            font-size: 1.4rem;
+            animation: coinFly 1.2s ease-out forwards;
+        }
+        @keyframes coinFly {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            30% {
+                opacity: 1;
+                transform: translate(var(--dx-30), var(--dy-30)) rotate(180deg) scale(1.2);
+            }
+            70% {
+                opacity: 0.8;
+                transform: translate(var(--dx-70), var(--dy-70)) rotate(360deg) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx-end), var(--dy-end)) rotate(540deg) scale(0.3);
+            }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 650px) {
+            .blog-container {
+                padding: 2rem 1.5rem;
+            }
+            .profile-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .intro-text h1 {
+                font-size: 2rem;
+            }
+            .bg-layer::before {
+                font-size: 20vw;
+                letter-spacing: 1rem;
+            }
+            .bg-layer::after {
+                font-size: 12vw;
+                letter-spacing: 0.5rem;
+            }
+            .bg-text-1 {
+                font-size: 5vw;
+            }
+            .bg-text-2 {
+                font-size: 3vw;
+            }
+            .bg-text-3 {
+                font-size: 2vw;
+            }
+            .red-packet-modal {
+                width: 300px;
+                max-width: 88vw;
+                border-radius: 20px;
+            }
+            .red-packet-inner {
+                padding: 2rem 1.2rem 1.5rem;
+                min-height: 270px;
+                border-radius: 20px;
+            }
+            .red-packet-pattern {
+                border-radius: 20px;
+            }
+            .red-packet-top-ornament {
+                top: -24px;
+                width: 40px;
+                height: 40px;
+            }
+            .red-packet-open-btn {
+                width: 72px;
+                height: 72px;
+                font-size: 1.8rem;
+            }
+            .red-packet-title {
+                font-size: 1.3rem;
+            }
+            .red-packet-result-amount {
+                font-size: 2.2rem;
+            }
+            .red-packet-close {
+                top: -10px;
+                right: -10px;
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="bg-layer">
-    <div class="bg-text-1">MEET IN WINTER</div>
-    <div class="bg-text-2">我愿追溯你的回忆 顺海归南</div>
-    <div class="bg-text-3">IN SEED TIME LEARN · IN HARVEST TEACH · IN WINTER ENJOY</div>
-  </div>
-  <div class="bg-overlay"></div>
-
-  <canvas id="particle-canvas"></canvas>
-
-  <div class="blog-container">
-    <div class="profile-header">
-      <div class="avatar-section">
-        <div class="avatar"><i class="fas fa-ghost"></i></div>
-        <div class="intro-text">
-          <h1>昊</h1>
-        <div class="intro-text">
-          <h1>ID:001</h1>
-          <div class="tagline">
-            <i class="fas fa-map-pin"></i> 摆烂的程序员
-            <i class="fas fa-circle" style="font-size: 0.4rem; color: #3b82f6;"></i>
-            <span>学习Python勿用于违法行为</span>
-          </div>
-        </div>
-      </div>
-      <div class="social-links">
-        <a href="mqq://im/chat?chat_type=wpa&uin=1058542436" aria-label="QQ" onclick="return openQQ(this.href);">
-          <i class="fab fa-qq"></i>
-        </a>
-      </div>
+    <div class="bg-layer">
+        <div class="bg-text-1">MEET IN WINTER</div>
+        <div class="bg-text-2">我愿追溯你的回忆 顺海归南</div>
+        <div class="bg-text-3">IN SEED TIME LEARN · IN HARVEST TEACH · IN WINTER ENJOY</div>
     </div>
+    <div class="bg-overlay"></div>
 
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-number">粒梅LOM后台</div><div class="stat-label">项目（后台项目）</div></div>
-      <div class="stat-card"><div class="stat-number">11392</div><div class="stat-label">注册用户</div></div>
-      <a href="mqq://im/chat?chat_type=wpa&uin=1058542436" onclick="return openQQ(this.href);" class="stat-card" style="text-decoration:none;">
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ==================== 红包弹窗 ==================== -->
+    <div class="red-packet-overlay" id="redPacketOverlay" aria-hidden="true">
+        <div class="red-packet-modal" id="redPacketModal">
+            <div class="red-packet-top-ornament" aria-hidden="true"></div>
+            <button class="red-packet-close" id="redPacketClose" aria-label="关闭红包">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="red-packet-inner" id="redPacketInner">
+                <div class="red-packet-pattern" aria-hidden="true"></div>
+                <div class="red-packet-gold-border" aria-hidden="true"></div>
+
+                <div class="red-packet-title">🧧 恭喜发财</div>
+                <div class="red-packet-subtitle">点击领取好运红包</div>
+
+                <button class="red-packet-open-btn" id="redPacketOpenBtn" aria-label="打开红包">
+                    開
+                </button>
+
+                <div class="red-packet-result" id="redPacketResult">
+                    <div class="red-packet-result-amount">🧧 好运红包</div>
+                    <div class="red-packet-result-msg">
+                        恭喜你获得隐藏福利！<br>
+                        添加好友获取更多惊喜~
+                    </div>
+                    <a href="javascript:void(0);"
+                    class="red-packet-result-qq"
+                    id="redPacketQQBtn"
+                    aria-label="添加QQ好友">
+                    <i class="fab fa-qq"></i> QQ: 1058542436
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blog-container">
+    <div class="profile-header">
+        <div class="avatar-section">
+            <div class="avatar"><i class="fas fa-ghost"></i></div>
+            <div class="intro-text">
+                <h1>昊</h1>
+                <div class="intro-text">
+                    <h1>ID:001</h1>
+                    <div class="tagline">
+                        <i class="fas fa-map-pin"></i> 摆烂的程序员
+                        <i class="fas fa-circle" style="font-size: 0.4rem; color: #3b82f6;"></i>
+                        <span>学习Python勿用于违法行为</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="social-links">
+            <a href="javascript:void(0);"
+            aria-label="领取红包"
+            id="qqRedPacketTrigger"
+            title="点击领取红包">
+            <i class="fab fa-qq"></i>
+            <span class="red-dot" aria-hidden="true"></span>
+        </a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-number">粒梅LOM后台</div><div class="stat-label">项目（后台项目）</div></div>
+    <div class="stat-card"><div class="stat-number">11392</div><div class="stat-label">注册用户</div></div>
+    <a href="mqq://im/chat?chat_type=wpa&uin=1058542436" onclick="return openQQ(this.href);" class="stat-card" style="text-decoration:none;">
         <div class="stat-number">定制APP</div>
         <div class="stat-label">QQ:1058542436</div>
-      </a>
-      <div class="stat-card"><div class="stat-number">∞</div><div class="stat-label">下载后台</div></div>
-    </div>
+    </a>
+    <div class="stat-card"><div class="stat-number">∞</div><div class="stat-label">下载后台</div></div>
+</div>
 
-    <section>
-      <h2 class="section-title"><i class="fas fa-bolt" style="color: #3b82f6;"></i> 擅长语言</h2>
-      <div class="posts-grid">
+<section>
+    <h2 class="section-title"><i class="fas fa-bolt" style="color: #3b82f6;"></i> 擅长语言</h2>
+    <div class="posts-grid">
         <article class="post-card">
-          <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
-          <h3 class="post-title">Java/C++/Python/PHP</h3>
-          <p class="post-excerpt">•使用Java语言独立开发过多个Android端原生项目...</p>
-          <button class="read-more">阅读全部 <i class="fas fa-arrow-right"></i></button>
+            <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
+            <h3 class="post-title">Java/C++/Python/PHP</h3>
+            <p class="post-excerpt">•使用Java语言独立开发过多个Android端原生项目...</p>
+            <button class="read-more">阅读全部 <i class="fas fa-arrow-right"></i></button>
         </article>
         <article class="post-card">
-          <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
-          <h3 class="post-title">粒梅LOM后台</h3>
-          <p class="post-excerpt">粒梅LOM后台是一款轻量级后台管理应用，轻量易上手，小白大佬都能使用，包含众多强大的功能，运行稳定。并且还包含iApp、Lua等语言的对接教学、实例源码，以及各种实战与基础教学，在使用的同时还能学习，甚至可以与广大用户进行交流。</p>
-          <button class="read-more">下载 <i class="fas fa-arrow-right"></i></button>
+            <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
+            <h3 class="post-title">粒梅LOM后台</h3>
+            <p class="post-excerpt">粒梅LOM后台是一款轻量级后台管理应用，轻量易上手，小白大佬都能使用，包含众多强大的功能，运行稳定。并且还包含iApp、Lua等语言的对接教学、实例源码，以及各种实战与基础教学，在使用的同时还能学习，甚至可以与广大用户进行交流。</p>
+            <button class="read-more">下载 <i class="fas fa-arrow-right"></i></button>
         </article>
         <article class="post-card timeline-section">
-          <div class="post-date"><i class="far fa-calendar-alt"></i> 相关经历</div>
-          <div class="timeline-container">
-            <div class="timeline-line"></div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content"><p>2020年在朋友的介绍下第一次接触编程，学习了C语言。</p></div>
+            <div class="post-date"><i class="far fa-calendar-alt"></i> 相关经历</div>
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content"><p>2020年在朋友的介绍下第一次接触编程，学习了C语言。</p></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content"><p>2021年第一次接触手机编程iApp、lua，从此对软件开发感兴趣</p></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content"><p>2022年学习了Java、PHP语言，并且开始开发后端，于四月份开发第一个独立项目"粒梅LOM"。从此进入软件开发行业</p></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content"><p>2023年学习了html、css、js语言，开始着力于网页开发，向全栈工程师方向迈进。</p></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content"><p>2024年学习了C++语言。</p></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content"><p>2025年着力于Netty、Swoole等即时通讯技术研究，开展了流式传输、通话功能、联网游戏交互等技术模块 同年开发"粒梅LOM后台"项目。</p></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content"><p>2026年未来将所有项目以最新架构开发</p></div>
+                </div>
             </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content"><p>2021年第一次接触手机编程iApp、lua，从此对软件开发感兴趣</p></div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content"><p>2022年学习了Java、PHP语言，并且开始开发后端，于四月份开发第一个独立项目“粒梅LOM”。从此进入软件开发行业</p></div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content"><p>2023年学习了html、css、js语言，开始着力于网页开发，向全栈工程师方向迈进。</p></div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content"><p>2024年学习了C++语言。</p></div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content"><p>2025年着力于Netty、Swoole等即时通讯技术研究，开展了流式传输、通话功能、联网游戏交互等技术模块 同年开发“粒梅LOM后台”项目。</p></div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div class="timeline-content"><p>2026年未来将所有项目以最新架构开发</p></div>
-            </div>
-          </div>
         </article>
-      </div>
-    </section>
+    </div>
+</section>
 
-    <section>
-      <h2 class="section-title"><i class="fas fa-cube"></i> 技术</h2>
-      <div class="skills">
+<section>
+    <h2 class="section-title"><i class="fas fa-cube"></i> 技术</h2>
+    <div class="skills">
         <span class="skill-tag">Java</span>
         <span class="skill-tag">C++</span>
         <span class="skill-tag">PHP</span>
@@ -548,201 +1014,381 @@
         <span class="skill-tag">Kotlin</span>
         <span class="skill-tag">定制</span>
         <span class="skill-tag">UI/UX</span>
-      </div>
-    </section>
+    </div>
+</section>
 
-    <footer><i class="far fa-copyright"></i> 2026 粒梅LOM · 粒梅文化传媒有限公司</footer>
-  </div>
+<footer><i class="far fa-copyright"></i> 2026 粒梅LOM · 粒梅文化传媒有限公司</footer>
+</div>
 
-  <script>
-    function openQQ(url){
-      if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
-        window.location.href=url;
-      }else{
-        window.open('https://user.qzone.qq.com/1058542436','_blank');
-      }
-      return false;
+<script>
+    function openQQ(url) {
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            window.location.href = url;
+        } else {
+            window.open('https://user.qzone.qq.com/1058542436', '_blank');
+        }
+        return false;
     }
 
+    // ==================== 红包弹窗逻辑 ====================
     (function() {
-      const canvas = document.getElementById('particle-canvas');
-      const ctx = canvas.getContext('2d');
-      ctx.imageSmoothingEnabled = false;
-      ctx.webkitImageSmoothingEnabled = false;
-      ctx.mozImageSmoothingEnabled = false;
+        const overlay = document.getElementById('redPacketOverlay');
+        const modal = document.getElementById('redPacketModal');
+        const inner = document.getElementById('redPacketInner');
+        const openBtn = document.getElementById('redPacketOpenBtn');
+        const resultDiv = document.getElementById('redPacketResult');
+        const closeBtn = document.getElementById('redPacketClose');
+        const trigger = document.getElementById('qqRedPacketTrigger');
+        const qqBtn = document.getElementById('redPacketQQBtn');
+        let isOpened = false;
+        let coinCleanupTimer = null;
 
-      let width, height;
-      let particles = [];
-      let mouseX = 0, mouseY = 0;
-      let rafId = null;
-      let isRunning = true;
+        // 创建金币粒子
+        function spawnCoins() {
+            const container = inner;
+            const containerRect = container.getBoundingClientRect();
+            const centerX = containerRect.width / 2;
+            const centerY = containerRect.height / 2;
+            const coinEmojis = ['🪙', '✨', '💰', '🎉', '🧧', '⭐', '💎', '🎊'];
+            const fragment = document.createDocumentFragment();
 
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const CONFIG = {
-        particleCount: isMobile ? 30 : 45,
-        connectDistance: 90,
-        colors: ['#00ffff', '#4facfe', '#a855f7', '#2dd4bf'],
-        mouseRadius: 70,
-        mouseForce: 0.02,
-        drawLineStep: 3,
-        fps: 30,
-        fpsInterval: 1000 / 30,
-        then: performance.now()
-      };
+            for (let i = 0; i < 18; i++) {
+                const coin = document.createElement('span');
+                coin.className = 'coin-particle';
+                coin.textContent = coinEmojis[Math.floor(Math.random() * coinEmojis.length)];
+                coin.style.left = centerX + 'px';
+                coin.style.top = centerY + 'px';
+                coin.style.fontSize = (1 + Math.random() * 1.8) + 'rem';
 
-      let resizeTimer;
-      function resizeCanvas() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-      }
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 60 + Math.random() * 150;
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance - 30 - Math.random() * 80;
 
-      class Particle {
-        constructor() {
-          this.x = 0;
-          this.y = 0;
-          this.vx = 0;
-          this.vy = 0;
-          this.radius = 0;
-          this.color = '';
+                coin.style.setProperty('--dx-30', (dx * 0.3) + 'px');
+                coin.style.setProperty('--dy-30', (dy * 0.3) + 'px');
+                coin.style.setProperty('--dx-70', (dx * 0.7) + 'px');
+                coin.style.setProperty('--dy-70', (dy * 0.7) + 'px');
+                coin.style.setProperty('--dx-end', dx + 'px');
+                coin.style.setProperty('--dy-end', dy + 'px');
+                coin.style.animationDuration = (0.8 + Math.random() * 1.4) + 's';
+                coin.style.animationDelay = (Math.random() * 0.3) + 's';
+
+                fragment.appendChild(coin);
+            }
+
+            container.appendChild(fragment);
+
+            // 清理金币粒子
+            if (coinCleanupTimer) clearTimeout(coinCleanupTimer);
+            coinCleanupTimer = setTimeout(() => {
+                const coins = container.querySelectorAll('.coin-particle');
+                coins.forEach(c => c.remove());
+            }, 2000);
         }
-        reset() {
-          this.x = Math.random() * width;
-          this.y = Math.random() * height;
-          this.vx = (Math.random() - 0.5) * 0.5;
-          this.vy = (Math.random() - 0.5) * 0.5;
-          this.radius = Math.random() * 1.5 + 0.8;
-          this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
-        }
-        update() {
-          this.x += this.vx;
-          this.y += this.vy;
-          if (this.x <= 0 || this.x >= width) this.vx *= -1;
-          if (this.y <= 0 || this.y >= height) this.vy *= -1;
-        }
-        draw() {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-          ctx.fillStyle = this.color;
-          ctx.fill();
-        }
-      }
 
-      function initParticles() {
-        particles = [];
-        for (let i = 0; i < CONFIG.particleCount; i++) {
-          const p = new Particle();
-          p.reset();
-          particles.push(p);
+        // 打开红包
+        function openRedPacket() {
+            if (isOpened) return;
+            isOpened = true;
+
+            // 按钮爆炸动画
+            openBtn.classList.add('opened');
+
+            // 延迟显示结果
+            setTimeout(() => {
+                openBtn.style.display = 'none';
+                resultDiv.classList.add('show');
+                spawnCoins();
+            }, 400);
+
+            // 触发轻微震动反馈（移动端）
+            if (navigator.vibrate && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                try {
+                    navigator.vibrate([30, 50, 30, 50, 50]);
+                } catch (e) {}
+            }
         }
-      }
 
-      function drawLines() {
-        const len = particles.length;
-        const limit = CONFIG.connectDistance;
-        for (let i = 0; i < len; i += CONFIG.drawLineStep) {
-          const p1 = particles[i];
-          for (let j = i + 1; j < len; j += CONFIG.drawLineStep) {
-            const p2 = particles[j];
-            const dx = p1.x - p2.x;
-            const dy = p1.y - p2.y;
-            if (dx * dx + dy * dy > limit * limit) continue;
-
-            const dist = Math.hypot(dx, dy);
-            const alpha = 1 - dist / limit;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.2})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
+        // 重置红包状态
+        function resetRedPacket() {
+            isOpened = false;
+            openBtn.classList.remove('opened');
+            openBtn.style.display = '';
+            resultDiv.classList.remove('show');
+            const coins = inner.querySelectorAll('.coin-particle');
+            coins.forEach(c => c.remove());
+            if (coinCleanupTimer) clearTimeout(coinCleanupTimer);
+            coinCleanupTimer = null;
         }
-      }
 
-      let mouseTimer = null;
-      window.addEventListener('mousemove', (e) => {
-        if (mouseTimer) return;
-        mouseTimer = setTimeout(() => {
-          mouseX = e.clientX;
-          mouseY = e.clientY;
-          mouseTimer = null;
-        }, 32);
-      });
+        // 显示弹窗
+        function showRedPacket() {
+            resetRedPacket();
+            overlay.classList.add('active');
+            document.body.classList.add('modal-open');
+            overlay.setAttribute('aria-hidden', 'false');
+            // 防止背景滚动
+            document.body.style.overflow = 'hidden';
+        }
 
-      function animate(now) {
-        if (!isRunning) return;
+        // 隐藏弹窗
+        function hideRedPacket() {
+            overlay.classList.remove('active');
+            document.body.classList.remove('modal-open');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            // 延迟重置，让关闭动画完成
+            setTimeout(resetRedPacket, 400);
+        }
+
+        // 事件绑定
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            showRedPacket();
+        });
+
+        openBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openRedPacket();
+        });
+
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideRedPacket();
+        });
+
+        // 点击遮罩关闭
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                hideRedPacket();
+            }
+        });
+
+        // 点击弹窗卡片内部不关闭（但已开红包后点击空白区域可关闭）
+        modal.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // 如果红包已开，点击卡片内非按钮区域也可关闭
+            if (isOpened && e.target !== qqBtn && !qqBtn.contains(e.target)) {
+                // 不强制关闭，让用户点关闭按钮或遮罩
+            }
+        });
+
+        // QQ按钮
+        qqBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                window.location.href = 'mqq://im/chat?chat_type=wpa&uin=1058542436';
+            } else {
+                window.open('https://user.qzone.qq.com/1058542436', '_blank');
+            }
+        });
+
+        // ESC关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                hideRedPacket();
+            }
+        });
+
+        // 触摸滑动阻止穿透
+        overlay.addEventListener('touchmove', function(e) {
+            if (overlay.classList.contains('active')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    })();
+
+    // ==================== 粒子背景 ====================
+    (function() {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.mozImageSmoothingEnabled = false;
+
+        let width, height;
+        let particles = [];
+        let mouseX = 0,
+            mouseY = 0;
+        let rafId = null;
+        let isRunning = true;
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator
+            .userAgent);
+        const CONFIG = {
+            particleCount: isMobile ? 30 : 45,
+            connectDistance: 90,
+            colors: ['#00ffff', '#4facfe', '#a855f7', '#2dd4bf'],
+            mouseRadius: 70,
+            mouseForce: 0.02,
+            drawLineStep: 3,
+            fps: 30,
+            fpsInterval: 1000 / 30,
+            then: performance.now()
+        };
+
+        let resizeTimer;
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = 0;
+                this.y = 0;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = 0;
+                this.color = '';
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 1.5 + 0.8;
+                this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x <= 0 || this.x >= width) this.vx *= -1;
+                if (this.y <= 0 || this.y >= height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < CONFIG.particleCount; i++) {
+                const p = new Particle();
+                p.reset();
+                particles.push(p);
+            }
+        }
+
+        function drawLines() {
+            const len = particles.length;
+            const limit = CONFIG.connectDistance;
+            for (let i = 0; i < len; i += CONFIG.drawLineStep) {
+                const p1 = particles[i];
+                for (let j = i + 1; j < len; j += CONFIG.drawLineStep) {
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    if (dx * dx + dy * dy > limit * limit) continue;
+
+                    const dist = Math.hypot(dx, dy);
+                    const alpha = 1 - dist / limit;
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.2})`;
+                    ctx.lineWidth = 0.6;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        let mouseTimer = null;
+        window.addEventListener('mousemove', (e) => {
+            if (mouseTimer) return;
+            mouseTimer = setTimeout(() => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                mouseTimer = null;
+            }, 32);
+        });
+
+        function animate(now) {
+            if (!isRunning) return;
+            rafId = requestAnimationFrame(animate);
+
+            const elapsed = now - CONFIG.then;
+            if (elapsed < CONFIG.fpsInterval) return;
+            CONFIG.then = now - (elapsed % CONFIG.fpsInterval);
+
+            ctx.clearRect(0, 0, width, height);
+            const len = particles.length;
+
+            for (let i = 0; i < len; i++) {
+                const p = particles[i];
+                p.update();
+
+                const dx = mouseX - p.x;
+                const dy = mouseY - p.y;
+                const distSq = dx * dx + dy * dy;
+                const radiusSq = CONFIG.mouseRadius * CONFIG.mouseRadius;
+
+                if (distSq < radiusSq && distSq > 0) {
+                    const dist = Math.sqrt(distSq);
+                    const force = (CONFIG.mouseRadius - dist) / CONFIG.mouseRadius;
+                    p.vx += (dx / dist) * force * CONFIG.mouseForce;
+                    p.vy += (dy / dist) * force * CONFIG.mouseForce;
+                }
+                p.draw();
+            }
+
+            drawLines();
+        }
+
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                resizeCanvas();
+                initParticles();
+            }, 300);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                isRunning = false;
+                cancelAnimationFrame(rafId);
+            } else {
+                isRunning = true;
+                CONFIG.then = performance.now();
+                rafId = requestAnimationFrame(animate);
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            isRunning = false;
+            cancelAnimationFrame(rafId);
+            particles.length = 0;
+        });
+
+        resizeCanvas();
+        initParticles();
         rafId = requestAnimationFrame(animate);
-
-        const elapsed = now - CONFIG.then;
-        if (elapsed < CONFIG.fpsInterval) return;
-        CONFIG.then = now - (elapsed % CONFIG.fpsInterval);
-
-        ctx.clearRect(0, 0, width, height);
-        const len = particles.length;
-
-        for (let i = 0; i < len; i++) {
-          const p = particles[i];
-          p.update();
-
-          const dx = mouseX - p.x;
-          const dy = mouseY - p.y;
-          const distSq = dx * dx + dy * dy;
-          const radiusSq = CONFIG.mouseRadius * CONFIG.mouseRadius;
-
-          if (distSq < radiusSq && distSq > 0) {
-            const dist = Math.sqrt(distSq);
-            const force = (CONFIG.mouseRadius - dist) / CONFIG.mouseRadius;
-            p.vx += (dx / dist) * force * CONFIG.mouseForce;
-            p.vy += (dy / dist) * force * CONFIG.mouseForce;
-          }
-          p.draw();
-        }
-
-        drawLines();
-      }
-
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-          resizeCanvas();
-          initParticles();
-        }, 300);
-      });
-
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          isRunning = false;
-          cancelAnimationFrame(rafId);
-        } else {
-          isRunning = true;
-          CONFIG.then = performance.now();
-          rafId = requestAnimationFrame(animate);
-        }
-      });
-
-      window.addEventListener('beforeunload', () => {
-        isRunning = false;
-        cancelAnimationFrame(rafId);
-        particles.length = 0;
-      });
-
-      resizeCanvas();
-      initParticles();
-      rafId = requestAnimationFrame(animate);
     })();
 
-    // 动态替换头像为指定图片（不动源代码）
+    // 动态替换头像为指定图片
     (function replaceAvatar() {
-      const avatarDiv = document.querySelector('.avatar');
-      if (!avatarDiv) return;
-      const img = document.createElement('img');
-      img.src = 'http://pan.cnmsb.vip/data/img/upload/2026/06/07/d7b1b7af1b5b73ca0e86385da5c15c36.jpg';
-      img.alt = '头像';
-      avatarDiv.innerHTML = '';
-      avatarDiv.appendChild(img);
+        const avatarDiv = document.querySelector('.avatar');
+        if (!avatarDiv) return;
+        const img = document.createElement('img');
+        img.src = 'http://pan.cnmsb.vip/data/img/upload/2026/06/07/d7b1b7af1b5b73ca0e86385da5c15c36.jpg';
+        img.alt = '头像';
+        img.onerror = function() {
+            // 图片加载失败则保留默认图标
+            avatarDiv.innerHTML = '<i class="fas fa-ghost"></i>';
+        };
+        avatarDiv.innerHTML = '';
+        avatarDiv.appendChild(img);
     })();
-  </script>
+</script>
 </body>
 </html>
