@@ -242,6 +242,23 @@
             font-size: 1rem;
         }
 
+        .real-time-box {
+            margin-top: 10px;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .time-main {
+            font-size: 1.6rem;
+            color: #00e5ff;
+            text-shadow: 0 0 8px #00e5ff, 0 0 16px #4facfe;
+            letter-spacing: 4px;
+        }
+        .time-date {
+            font-size: 1rem;
+            color: #3b82f6;
+            margin-top: 4px;
+            letter-spacing: 2px;
+        }
+
         .social-links {
             display: flex;
             gap: 1.5rem;
@@ -483,7 +500,6 @@
             font-size: 0.85rem;
         }
 
-        /* ==================== 红包弹窗样式 ==================== */
         .red-packet-overlay {
             position: fixed;
             inset: 0;
@@ -773,7 +789,6 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* 金币粒子 */
         .coin-particle {
             position: absolute;
             z-index: 5;
@@ -800,7 +815,6 @@
             }
         }
 
-        /* 移动端适配 */
         @media (max-width: 650px) {
             .blog-container {
                 padding: 2rem 1.5rem;
@@ -865,6 +879,9 @@
                 height: 32px;
                 font-size: 0.85rem;
             }
+            .time-main {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
@@ -878,7 +895,6 @@
 
     <canvas id="particle-canvas"></canvas>
 
-    <!-- ==================== 红包弹窗 ==================== -->
     <div class="red-packet-overlay" id="redPacketOverlay" aria-hidden="true">
         <div class="red-packet-modal" id="redPacketModal">
             <div class="red-packet-top-ornament" aria-hidden="true"></div>
@@ -916,7 +932,7 @@
 <div class="blog-container">
     <div class="profile-header">
         <div class="avatar-section">
-            <div class="avatar"><i class="fas fa-ghost"></i></div>
+            <div class="avatar"><img src="http://pan.cnmsb.vip/data/img/upload/2026/06/07/dc2be915291cb4767a7ff2e27119390b.jpg" alt="头像"></div>
             <div class="intro-text">
                 <h1>昊</h1>
                 <div class="intro-text">
@@ -925,6 +941,10 @@
                         <i class="fas fa-map-pin"></i> 摆烂的程序员
                         <i class="fas fa-circle" style="font-size: 0.4rem; color: #3b82f6;"></i>
                         <span>学习Python勿用于违法行为</span>
+                    </div>
+                    <div class="real-time-box">
+                        <div class="time-main" id="timeMain">00:00:00</div>
+                        <div class="time-date" id="timeDate">2026-01-01 星期一</div>
                     </div>
                 </div>
             </div>
@@ -949,7 +969,17 @@
     </a>
     <div class="stat-card"><div class="stat-number">∞</div><div class="stat-label">下载后台</div></div>
 </div>
-
+<section>
+    <h2 class="section-title"><i class="fas fa-bolt" style="color: #3b82f6;"></i> 售后服务</h2>
+    <div class="posts-grid">
+        <article class="post-card">
+            <div class="post-date"><i class="far fa-calendar-alt"></i> 每天10:00-18:00</div>
+            <h3 class="post-title">粒梅LOM后台</h3>
+            <p class="post-excerpt">支持退款/代码帮写</p>
+            <button class="read-more">处理售后 <i class="fas fa-arrow-right"></i></button>
+        </article>
+    </div>
+</section>
 <section>
     <h2 class="section-title"><i class="fas fa-bolt" style="color: #3b82f6;"></i> 擅长语言</h2>
     <div class="posts-grid">
@@ -1030,7 +1060,23 @@
         return false;
     }
 
-    // ==================== 红包弹窗逻辑 ====================
+    function updateRealTime() {
+        const now = new Date();
+        const weekArr = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const minute = String(now.getMinutes()).padStart(2, '0');
+        const second = String(now.getSeconds()).padStart(2, '0');
+        const week = weekArr[now.getDay()];
+
+        document.getElementById('timeMain').innerText = `${hour}:${minute}:${second}`;
+        document.getElementById('timeDate').innerText = `${year}-${month}-${day} ${week}`;
+    }
+    updateRealTime();
+    setInterval(updateRealTime, 1000);
+
     (function() {
         const overlay = document.getElementById('redPacketOverlay');
         const modal = document.getElementById('redPacketModal');
@@ -1043,7 +1089,6 @@
         let isOpened = false;
         let coinCleanupTimer = null;
 
-        // 创建金币粒子
         function spawnCoins() {
             const container = inner;
             const containerRect = container.getBoundingClientRect();
@@ -1071,323 +1116,159 @@
                 coin.style.setProperty('--dy-70', (dy * 0.7) + 'px');
                 coin.style.setProperty('--dx-end', dx + 'px');
                 coin.style.setProperty('--dy-end', dy + 'px');
-                coin.style.animationDuration = (0.8 + Math.random() * 1.4) + 's';
-                coin.style.animationDelay = (Math.random() * 0.3) + 's';
 
                 fragment.appendChild(coin);
             }
-
             container.appendChild(fragment);
 
-            // 清理金币粒子
             if (coinCleanupTimer) clearTimeout(coinCleanupTimer);
             coinCleanupTimer = setTimeout(() => {
-                const coins = container.querySelectorAll('.coin-particle');
-                coins.forEach(c => c.remove());
-            }, 2000);
+                const particles = container.querySelectorAll('.coin-particle');
+                particles.forEach(p => p.remove());
+            }, 1400);
         }
 
-        // 打开红包
         function openRedPacket() {
             if (isOpened) return;
             isOpened = true;
 
-            // 按钮爆炸动画
             openBtn.classList.add('opened');
+            spawnCoins();
 
-            // 延迟显示结果
             setTimeout(() => {
                 openBtn.style.display = 'none';
                 resultDiv.classList.add('show');
-                spawnCoins();
-            }, 400);
-
-            // 触发轻微震动反馈（移动端）
-            if (navigator.vibrate && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                try {
-                    navigator.vibrate([30, 50, 30, 50, 50]);
-                } catch (e) {}
-            }
+            }, 500);
         }
 
-        // 重置红包状态
         function resetRedPacket() {
             isOpened = false;
             openBtn.classList.remove('opened');
-            openBtn.style.display = '';
+            openBtn.style.display = 'flex';
             resultDiv.classList.remove('show');
-            const coins = inner.querySelectorAll('.coin-particle');
-            coins.forEach(c => c.remove());
+            const particles = inner.querySelectorAll('.coin-particle');
+            particles.forEach(p => p.remove());
             if (coinCleanupTimer) clearTimeout(coinCleanupTimer);
-            coinCleanupTimer = null;
         }
 
-        // 显示弹窗
-        function showRedPacket() {
-            resetRedPacket();
+        function showModal() {
             overlay.classList.add('active');
             document.body.classList.add('modal-open');
-            overlay.setAttribute('aria-hidden', 'false');
-            // 防止背景滚动
-            document.body.style.overflow = 'hidden';
+            resetRedPacket();
         }
 
-        // 隐藏弹窗
-        function hideRedPacket() {
+        function hideModal() {
             overlay.classList.remove('active');
             document.body.classList.remove('modal-open');
-            overlay.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
-            // 延迟重置，让关闭动画完成
             setTimeout(resetRedPacket, 400);
         }
 
-        // 事件绑定
-        trigger.addEventListener('click', function(e) {
+        trigger.addEventListener('click', (e) => {
             e.preventDefault();
-            showRedPacket();
+            showModal();
         });
 
-        openBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            openRedPacket();
-        });
+        closeBtn.addEventListener('click', hideModal);
 
-        closeBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            hideRedPacket();
-        });
-
-        // 点击遮罩关闭
-        overlay.addEventListener('click', function(e) {
+        overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
-                hideRedPacket();
+                hideModal();
             }
         });
 
-        // 点击弹窗卡片内部不关闭（但已开红包后点击空白区域可关闭）
-        modal.addEventListener('click', function(e) {
-            e.stopPropagation();
-            // 如果红包已开，点击卡片内非按钮区域也可关闭
-            if (isOpened && e.target !== qqBtn && !qqBtn.contains(e.target)) {
-                // 不强制关闭，让用户点关闭按钮或遮罩
-            }
-        });
+        openBtn.addEventListener('click', openRedPacket);
 
-        // QQ按钮
-        qqBtn.addEventListener('click', function(e) {
+        qqBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            e.stopPropagation();
-            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                window.location.href = 'mqq://im/chat?chat_type=wpa&uin=1058542436';
-            } else {
-                window.open('https://user.qzone.qq.com/1058542436', '_blank');
-            }
+            openQQ('mqq://im/chat?chat_type=wpa&uin=1058542436');
         });
 
-        // ESC关闭
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && overlay.classList.contains('active')) {
-                hideRedPacket();
+                hideModal();
             }
         });
-
-        // 触摸滑动阻止穿透
-        overlay.addEventListener('touchmove', function(e) {
-            if (overlay.classList.contains('active')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
     })();
 
-    // ==================== 粒子背景 ====================
     (function() {
         const canvas = document.getElementById('particle-canvas');
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        ctx.imageSmoothingEnabled = false;
-        ctx.webkitImageSmoothingEnabled = false;
-        ctx.mozImageSmoothingEnabled = false;
-
-        let width, height;
         let particles = [];
-        let mouseX = 0,
-            mouseY = 0;
-        let rafId = null;
-        let isRunning = true;
+        let animationId;
+        let resizeTimeout;
 
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator
-            .userAgent);
-        const CONFIG = {
-            particleCount: isMobile ? 30 : 45,
-            connectDistance: 90,
-            colors: ['#00ffff', '#4facfe', '#a855f7', '#2dd4bf'],
-            mouseRadius: 70,
-            mouseForce: 0.02,
-            drawLineStep: 3,
-            fps: 30,
-            fpsInterval: 1000 / 30,
-            then: performance.now()
-        };
-
-        let resizeTimer;
-
-        function resizeCanvas() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
+        function resize() {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(dpr, dpr);
         }
 
-        class Particle {
-            constructor() {
-                this.x = 0;
-                this.y = 0;
-                this.vx = 0;
-                this.vy = 0;
-                this.radius = 0;
-                this.color = '';
-            }
-            reset() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.radius = Math.random() * 1.5 + 0.8;
-                this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                if (this.x <= 0 || this.x >= width) this.vx *= -1;
-                if (this.y <= 0 || this.y >= height) this.vy *= -1;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
+        function createParticles() {
+            const count = Math.min(Math.floor(window.innerWidth * 0.06), 80);
             particles = [];
-            for (let i = 0; i < CONFIG.particleCount; i++) {
-                const p = new Particle();
-                p.reset();
-                particles.push(p);
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    radius: Math.random() * 2.5 + 1,
+                    speedX: (Math.random() - 0.5) * 0.6,
+                    speedY: (Math.random() - 0.5) * 0.6,
+                    opacity: Math.random() * 0.5 + 0.1
+                });
             }
         }
 
-        function drawLines() {
-            const len = particles.length;
-            const limit = CONFIG.connectDistance;
-            for (let i = 0; i < len; i += CONFIG.drawLineStep) {
-                const p1 = particles[i];
-                for (let j = i + 1; j < len; j += CONFIG.drawLineStep) {
-                    const p2 = particles[j];
-                    const dx = p1.x - p2.x;
-                    const dy = p1.y - p2.y;
-                    if (dx * dx + dy * dy > limit * limit) continue;
+        function animate() {
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if (p.x < -10) p.x = window.innerWidth + 10;
+                if (p.x > window.innerWidth + 10) p.x = -10;
+                if (p.y < -10) p.y = window.innerHeight + 10;
+                if (p.y > window.innerHeight + 10) p.y = -10;
 
-                    const dist = Math.hypot(dx, dy);
-                    const alpha = 1 - dist / limit;
-                    ctx.beginPath();
-                    ctx.moveTo(p1.x, p1.y);
-                    ctx.lineTo(p2.x, p2.y);
-                    ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.2})`;
-                    ctx.lineWidth = 0.6;
-                    ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(59,130,246,${p.opacity})`;
+                ctx.fill();
+            });
+
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 110) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(59,130,246,${0.06 * (1 - dist / 110)})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
                 }
             }
+            animationId = requestAnimationFrame(animate);
         }
 
-        let mouseTimer = null;
-        window.addEventListener('mousemove', (e) => {
-            if (mouseTimer) return;
-            mouseTimer = setTimeout(() => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                mouseTimer = null;
-            }, 32);
-        });
-
-        function animate(now) {
-            if (!isRunning) return;
-            rafId = requestAnimationFrame(animate);
-
-            const elapsed = now - CONFIG.then;
-            if (elapsed < CONFIG.fpsInterval) return;
-            CONFIG.then = now - (elapsed % CONFIG.fpsInterval);
-
-            ctx.clearRect(0, 0, width, height);
-            const len = particles.length;
-
-            for (let i = 0; i < len; i++) {
-                const p = particles[i];
-                p.update();
-
-                const dx = mouseX - p.x;
-                const dy = mouseY - p.y;
-                const distSq = dx * dx + dy * dy;
-                const radiusSq = CONFIG.mouseRadius * CONFIG.mouseRadius;
-
-                if (distSq < radiusSq && distSq > 0) {
-                    const dist = Math.sqrt(distSq);
-                    const force = (CONFIG.mouseRadius - dist) / CONFIG.mouseRadius;
-                    p.vx += (dx / dist) * force * CONFIG.mouseForce;
-                    p.vy += (dy / dist) * force * CONFIG.mouseForce;
-                }
-                p.draw();
-            }
-
-            drawLines();
+        function handleResize() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                resize();
+                createParticles();
+            }, 200);
         }
 
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                resizeCanvas();
-                initParticles();
-            }, 300);
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                isRunning = false;
-                cancelAnimationFrame(rafId);
-            } else {
-                isRunning = true;
-                CONFIG.then = performance.now();
-                rafId = requestAnimationFrame(animate);
-            }
-        });
-
-        window.addEventListener('beforeunload', () => {
-            isRunning = false;
-            cancelAnimationFrame(rafId);
-            particles.length = 0;
-        });
-
-        resizeCanvas();
-        initParticles();
-        rafId = requestAnimationFrame(animate);
-    })();
-
-    // 动态替换头像为指定图片
-    (function replaceAvatar() {
-        const avatarDiv = document.querySelector('.avatar');
-        if (!avatarDiv) return;
-        const img = document.createElement('img');
-        img.src = 'http://pan.cnmsb.vip/data/img/upload/2026/06/07/d7b1b7af1b5b73ca0e86385da5c15c36.jpg';
-        img.alt = '头像';
-        img.onerror = function() {
-            // 图片加载失败则保留默认图标
-            avatarDiv.innerHTML = '<i class="fas fa-ghost"></i>';
-        };
-        avatarDiv.innerHTML = '';
-        avatarDiv.appendChild(img);
+        resize();
+        createParticles();
+        animate();
+        window.addEventListener('resize', handleResize);
     })();
 </script>
 </body>
