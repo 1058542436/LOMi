@@ -17,7 +17,7 @@
       --color-neon: #00ffff;
       --color-neon-light: #4facfe;
       --color-purple: #a855f7;
-      --color-bg-card: rgba(255, 255, 255, 0.25); /* 透明白色毛玻璃核心 */
+      --color-bg-card: rgba(255, 255, 255, 0.25);
       --color-card-light: rgba(255, 255, 255, 0.2);
       --color-text-primary: #0f172a;
       --color-text-secondary: #1e293b;
@@ -54,7 +54,6 @@
       backface-visibility: hidden;
     }
 
-    /* 柔和渐变背景层 */
     .bg-layer {
       position: fixed;
       inset: 0;
@@ -63,7 +62,6 @@
       overflow: hidden;
     }
 
-    /* 半透明装饰文字，保留原有氛围 */
     .bg-layer::before,
     .bg-layer::after,
     .bg-text-1,
@@ -122,7 +120,6 @@
       letter-spacing: 0.1rem;
     }
 
-    /* 极浅遮罩，突出毛玻璃卡片 */
     .bg-overlay {
       position: fixed;
       inset: 0;
@@ -383,7 +380,6 @@
       box-shadow: 0 0 18px rgba(0, 255, 255, 0.4);
     }
 
-    /* 时间线样式 */
     .timeline-section {
       margin-top: 0.5rem;
     }
@@ -447,7 +443,6 @@
   </style>
 </head>
 <body>
-  <!-- 透明白色背景层 -->
   <div class="bg-layer">
     <div class="bg-text-1">MEET IN WINTER</div>
     <div class="bg-text-2">我愿追溯你的回忆 顺海归南</div>
@@ -737,7 +732,17 @@
       initParticles();
       rafId = requestAnimationFrame(animate);
     })();
+
+    // 动态替换头像为指定图片（不动源代码）
+    (function replaceAvatar() {
+      const avatarDiv = document.querySelector('.avatar');
+      if (!avatarDiv) return;
+      const img = document.createElement('img');
+      img.src = 'http://pan.cnmsb.vip/data/img/upload/2026/06/07/d7b1b7af1b5b73ca0e86385da5c15c36.jpg';
+      img.alt = '头像';
+      avatarDiv.innerHTML = '';
+      avatarDiv.appendChild(img);
+    })();
   </script>
 </body>
 </html>
-```
