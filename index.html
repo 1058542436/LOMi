@@ -1,1276 +1,215 @@
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>官网</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接口已关闭</title>
     <style>
-        :root {
-            --color-neon: #00ffff;
-            --color-neon-light: #4facfe;
-            --color-purple: #a855f7;
-            --color-bg-card: rgba(255, 255, 255, 0.25);
-            --color-card-light: rgba(255, 255, 255, 0.2);
-            --color-text-primary: #0f172a;
-            --color-text-secondary: #1e293b;
-            --radius-xl: 3.5rem;
-            --radius-lg: 2rem;
-            --blur-base: 20px;
-            --blur-heavy: 35px;
-            --transition-base: 0.3s ease;
-            --red-packet-red: #d4343e;
-            --red-packet-dark: #a82028;
-            --red-packet-gold: #e8b84b;
-            --red-packet-gold-light: #f7d774;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation: none !important;
-                transition: none !important;
-            }
-            #particle-canvas {
-                display: none;
-            }
-            .coin-particle {
-                animation: none !important;
-            }
-        }
-
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            min-height: 100vh;
-            color: var(--color-text-primary);
-            overflow-x: hidden;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #000412;
+            font-family: "Consolas", monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem 1.5rem;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            backface-visibility: hidden;
-            transition: filter 0.3s ease;
-        }
-
-        body.modal-open {
-            overflow: hidden;
-        }
-
-        .bg-layer {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 30%, #f5f3ff 70%, #ede9fe 100%);
-            overflow: hidden;
-        }
-
-        .bg-layer::before,
-        .bg-layer::after,
-        .bg-text-1,
-        .bg-text-2,
-        .bg-text-3 {
-            position: absolute;
-            color: rgba(0, 0, 0, 0.03);
-            font-weight: 900;
-            text-transform: uppercase;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .bg-layer::before {
-            content: "昊";
-            top: 30%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 15vw;
-            letter-spacing: 2rem;
-        }
-
-        .bg-layer::after {
-            content: "UPSTREAM";
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 8vw;
-            letter-spacing: 1rem;
-        }
-
-        .bg-text-1 {
-            content: "MEET IN WINTER";
-            top: 42%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3vw;
-            letter-spacing: 0.5rem;
-        }
-
-        .bg-text-2 {
-            content: "游戏可以改变生活";
-            top: 25%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.5vw;
-            letter-spacing: 0.2rem;
-        }
-
-        .bg-text-3 {
-            content: "IN SEED TIME LEARN · IN HARVEST TEACH · IN WINTER ENJOY";
-            top: 48%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1vw;
-            letter-spacing: 0.1rem;
-        }
-
-        .bg-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        #particle-canvas {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            backface-visibility: hidden;
-            will-change: contents;
-            image-rendering: optimizeSpeed;
-        }
-
-        .blog-container {
             position: relative;
-            z-index: 10;
-            max-width: 1100px;
-            width: 100%;
-            background: var(--color-bg-card);
-            backdrop-filter: blur(var(--blur-heavy));
-            -webkit-backdrop-filter: blur(var(--blur-heavy));
-            border-radius: var(--radius-xl);
-            padding: 2.8rem 2.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.08), 0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3);
-            transition: var(--transition-base);
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-            will-change: transform;
-            transform: translateZ(0);
-            backface-visibility: hidden;
         }
-        .blog-container:hover {
-            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(255, 255, 255, 0.7), 0 0 60px rgba(255, 255, 255, 0.4);
-        }
-
-        .profile-header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 2rem;
-        }
-        .avatar-section {
-            display: flex;
-            align-items: center;
-            gap: 1.8rem;
-            flex-wrap: wrap;
-        }
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-neon), var(--color-neon-light));
-            display: grid;
-            place-items: center;
-            font-size: 3.5rem;
-            color: #fff;
-            box-shadow: 0 0 35px rgba(0, 255, 255, 0.5), 0 10px 25px rgba(0, 0, 0, 0.1);
-            border: 3px solid rgba(255, 255, 255, 0.8);
-            transition: transform 0.4s ease;
-            will-change: transform;
-            transform: translateZ(0);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .avatar:hover {
-            transform: rotate(5deg) scale(1.05);
-        }
-
-        .intro-text h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #0f172a, #3b82f6, var(--color-purple));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: 2px;
-        }
-        .tagline {
-            font-size: 1.2rem;
-            color: var(--color-text-secondary);
-            margin-top: 0.4rem;
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            flex-wrap: wrap;
-        }
-        .tagline i {
-            color: #3b82f6;
-            font-size: 1rem;
-        }
-
-        .real-time-box {
-            margin-top: 10px;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .time-main {
-            font-size: 1.6rem;
-            color: #00e5ff;
-            text-shadow: 0 0 8px #00e5ff, 0 0 16px #4facfe;
-            letter-spacing: 4px;
-        }
-        .time-date {
-            font-size: 1rem;
-            color: #3b82f6;
-            margin-top: 4px;
-            letter-spacing: 2px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            font-size: 1.8rem;
-        }
-        .social-links a {
-            color: #475569;
-            transition: var(--transition-base);
-            text-decoration: none;
-            will-change: transform;
-            cursor: pointer;
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .social-links a:hover {
-            color: var(--color-neon);
-            transform: translateY(-4px);
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-        }
-        .social-links a .red-dot {
+        /* 粒子画布 */
+        #particles {
             position: absolute;
-            top: -6px;
-            right: -8px;
-            width: 14px;
-            height: 14px;
-            background: #e74c3c;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            animation: dotPulse 2s infinite;
-            pointer-events: none;
-        }
-        @keyframes dotPulse {
-            0%,
-            100% {
-                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
-            }
-        }
-
-        .stats-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: space-between;
-            margin: 0.5rem 0 1rem;
-        }
-        .stat-card {
-            flex: 1 1 150px;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(var(--blur-base));
-            -webkit-backdrop-filter: blur(var(--blur-base));
-            border-radius: var(--radius-lg);
-            padding: 1.2rem 1.8rem;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            transition: var(--transition-base);
-            will-change: transform;
-        }
-        .stat-card:hover {
-            background: rgba(255, 255, 255, 0.45);
-            border-color: var(--color-neon);
-            transform: translateY(-5px);
-        }
-        .stat-number {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(to top, #0f172a, #3b82f6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .stat-label {
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
-            color: #475569;
-            margin-top: 0.3rem;
-        }
-
-        .section-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            margin-bottom: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            color: #1e293b;
-            letter-spacing: 1px;
-        }
-
-        .posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.8rem;
-            margin-top: 0.5rem;
-        }
-        .post-card {
-            background: var(--color-card-light);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: var(--radius-lg);
-            padding: 1.6rem;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.05);
-            transition: all 0.35s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            will-change: transform;
-        }
-        .post-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--color-neon);
-            box-shadow: 0 0 35px rgba(0, 166, 255, 0.2), 0 20px 35px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.35);
-        }
-
-        .post-date {
-            font-size: 0.8rem;
-            color: #475569;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .post-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #0f172a;
-            line-height: 1.3;
-        }
-        .post-excerpt {
-            color: #334155;
-            font-size: 0.95rem;
-            flex: 1;
-        }
-        .read-more {
-            align-self: flex-start;
-            background: transparent;
-            border: 1px solid var(--color-neon);
-            color: #0f172a;
-            padding: 0.5rem 1.2rem;
-            border-radius: var(--radius-lg);
-            font-weight: 600;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: var(--transition-base);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            text-transform: uppercase;
-            will-change: transform;
-        }
-        .read-more:hover {
-            background: var(--color-neon);
-            color: #fff;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
-        }
-
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-top: 0.5rem;
-        }
-        .skill-tag {
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            border-radius: var(--radius-lg);
-            padding: 0.4rem 1.2rem;
-            font-size: 0.8rem;
-            color: #1e293b;
-            transition: var(--transition-base);
-            will-change: transform;
-        }
-        .skill-tag:hover {
-            background: var(--color-neon);
-            color: #000;
-            border-color: var(--color-neon);
-            box-shadow: 0 0 18px rgba(0, 255, 255, 0.4);
-        }
-
-        .timeline-section {
-            margin-top: 0.5rem;
-        }
-        .timeline-container {
-            position: relative;
-            padding-left: 30px;
-        }
-        .timeline-line {
-            position: absolute;
-            left: 12px;
             top: 0;
-            bottom: 0;
-            width: 2px;
-            background: rgba(0, 0, 0, 0.1);
+            left: 0;
+            z-index: 1;
         }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-        .timeline-dot {
+        /* 扫描横线动画 */
+        .scan-line {
             position: absolute;
-            left: -22px;
-            top: 6px;
-            width: 24px;
-            height: 24px;
-            background: #ffb000;
-            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-            box-shadow: 0 0 10px rgba(255, 176, 0, 0.4);
-        }
-        .timeline-content {
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 1rem 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        .timeline-content p {
-            margin: 0;
-            color: #1e293b;
-            line-height: 1.6;
-        }
-
-        footer {
-            margin-top: 1rem;
-            text-align: center;
-            color: #475569;
-            font-size: 0.85rem;
-        }
-
-        .red-packet-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .red-packet-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .red-packet-modal {
-            position: relative;
-            width: 340px;
-            max-width: 90vw;
-            background: linear-gradient(180deg, #c0392b 0%, #e74c3c 8%, #d4343e 15%, #b3202a 40%, #c0392b 55%, #a82028 100%);
-            border-radius: 24px;
-            box-shadow: 0 25px 60px rgba(180, 30, 30, 0.5), 0 0 0 4px rgba(232, 184, 75, 0.5), 0 0 0 8px rgba(200, 40, 40, 0.3), 0 0 80px rgba(255, 180, 50, 0.3);
-            padding: 0;
-            text-align: center;
-            transform: translateY(30px) scale(0.9);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: visible;
-            user-select: none;
-        }
-        .red-packet-overlay.active .red-packet-modal {
-            transform: translateY(0) scale(1);
-        }
-
-        .red-packet-top-ornament {
-            position: absolute;
-            top: -28px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #f7d774 0%, #e8b84b 40%, #c8942a 100%);
-            border-radius: 50%;
-            box-shadow: 0 6px 20px rgba(200, 150, 40, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+            box-shadow: 0 0 8px #00f0ff;
+            animation: scan 3s linear infinite;
             z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: ornamentBounce 2s infinite;
         }
-        .red-packet-top-ornament::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 16px;
-            background: #c8942a;
-            clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+        @keyframes scan {
+            0% { top: 0; opacity: 0.3; }
+            50% { opacity: 0.8; }
+            100% { top: 100vh; opacity: 0.3; }
         }
-        @keyframes ornamentBounce {
-            0%,
-            100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            30% {
-                transform: translateX(-50%) translateY(-6px);
-            }
-            50% {
-                transform: translateX(-50%) translateY(0);
-            }
-            70% {
-                transform: translateX(-50%) translateY(-3px);
-            }
-        }
-
-        .red-packet-inner {
-            padding: 2.5rem 1.8rem 2rem;
-            position: relative;
-            overflow: hidden;
-            border-radius: 24px;
-            min-height: 320px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.5s ease;
-        }
-
-        .red-packet-pattern {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0.08;
-            background: repeating-linear-gradient(45deg,
-                    transparent,
-                    transparent 8px,
-                    rgba(255, 215, 120, 0.6) 8px,
-                    rgba(255, 215, 120, 0.6) 10px),
-                repeating-linear-gradient(-45deg,
-                    transparent,
-                    transparent 8px,
-                    rgba(255, 215, 120, 0.6) 8px,
-                    rgba(255, 215, 120, 0.6) 10px);
-            border-radius: 24px;
-        }
-
-        .red-packet-gold-border {
-            position: absolute;
-            inset: 10px;
-            border: 2px solid rgba(232, 184, 75, 0.35);
-            border-radius: 16px;
-            pointer-events: none;
-        }
-
-        .red-packet-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: #f7d774;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 200, 60, 0.5);
-            letter-spacing: 3px;
-            position: relative;
-            z-index: 1;
-            margin-bottom: 0.3rem;
-        }
-        .red-packet-subtitle {
-            font-size: 0.85rem;
-            color: rgba(255, 220, 160, 0.9);
-            letter-spacing: 2px;
-            position: relative;
-            z-index: 1;
-            margin-bottom: 1.5rem;
-        }
-
-        .red-packet-open-btn {
-            position: relative;
-            z-index: 1;
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 40% 35%, #fde68a 0%, #f59e0b 40%, #d97706 100%);
-            border: 4px solid #fbbf24;
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.7), 0 0 60px rgba(251, 191, 36, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: #7c2d12;
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-            animation: btnGlow 2s infinite;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-        .red-packet-open-btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 50px rgba(245, 158, 11, 0.9), 0 0 80px rgba(251, 191, 36, 0.6), 0 10px 25px rgba(0, 0, 0, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-        }
-        .red-packet-open-btn:active {
-            transform: scale(0.92);
-            transition: transform 0.1s ease;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-        @keyframes btnGlow {
-            0%,
-            100% {
-                box-shadow: 0 0 30px rgba(245, 158, 11, 0.7), 0 0 60px rgba(251, 191, 36, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-            }
-            50% {
-                box-shadow: 0 0 50px rgba(245, 158, 11, 1), 0 0 90px rgba(251, 191, 36, 0.7), 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.5);
-            }
-        }
-
-        .red-packet-open-btn.opened {
-            animation: btnBurst 0.6s ease forwards;
-            pointer-events: none;
-        }
-        @keyframes btnBurst {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            40% {
-                transform: scale(1.3);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(0);
-                opacity: 0;
-            }
-        }
-
-        .red-packet-result {
-            position: relative;
-            z-index: 1;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            animation: resultFadeIn 0.6s ease forwards;
-        }
-        .red-packet-result.show {
-            display: flex;
-        }
-        @keyframes resultFadeIn {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .red-packet-result-amount {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
-            font-weight: 900;
-            color: #fde68a;
-            text-shadow: 0 0 30px rgba(255, 200, 50, 0.8), 0 4px 10px rgba(0, 0, 0, 0.5);
-            letter-spacing: 2px;
-        }
-        .red-packet-result-msg {
-            font-size: 1rem;
-            color: rgba(255, 220, 160, 0.95);
-            letter-spacing: 1px;
-            line-height: 1.5;
-        }
-        .red-packet-result-qq {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 30px;
-            padding: 0.6rem 1.4rem;
-            color: #fff;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            letter-spacing: 1px;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .red-packet-result-qq:hover {
-            background: rgba(255, 255, 255, 0.35);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        .red-packet-result-qq i {
-            font-size: 1.2rem;
-        }
-
-        .red-packet-close {
-            position: absolute;
-            top: -14px;
-            right: -14px;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: #fff;
-            border: 2px solid rgba(0, 0, 0, 0.15);
-            cursor: pointer;
-            font-size: 1rem;
-            color: #555;
+        /* 故障文字容器 */
+        .error-box {
             z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            -webkit-tap-highlight-color: transparent;
+            text-align: center;
+            padding: 40px 60px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(0,240,255,0.05);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
         }
-        .red-packet-close:hover {
-            background: #f5f5f5;
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        /* 故障霓虹文字 */
+        .glitch-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: #00f0ff;
+            text-shadow: 
+                0 0 5px #00f0ff,
+                0 0 10px #00f0ff,
+                0 0 20px #0088ff;
+            position: relative;
+            margin-bottom: 20px;
         }
-
-        .coin-particle {
+        .glitch-text::before {
+            content: attr(data-text);
             position: absolute;
-            z-index: 5;
-            pointer-events: none;
-            font-size: 1.4rem;
-            animation: coinFly 1.2s ease-out forwards;
+            left: -3px;
+            text-shadow: -2px 0 #ff2255;
+            clip: rect(0, 9999px, 0, 0);
+            animation: glitch-1 2s infinite linear alternate-reverse;
         }
-        @keyframes coinFly {
-            0% {
-                opacity: 1;
-                transform: translate(0, 0) rotate(0deg) scale(1);
-            }
-            30% {
-                opacity: 1;
-                transform: translate(var(--dx-30), var(--dy-30)) rotate(180deg) scale(1.2);
-            }
-            70% {
-                opacity: 0.8;
-                transform: translate(var(--dx-70), var(--dy-70)) rotate(360deg) scale(0.8);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(var(--dx-end), var(--dy-end)) rotate(540deg) scale(0.3);
-            }
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 3px;
+            text-shadow: -2px 0 #22ff88;
+            clip: rect(0, 9999px, 0, 0);
+            animation: glitch-2 3s infinite linear alternate-reverse;
         }
-
-        @media (max-width: 650px) {
-            .blog-container {
-                padding: 2rem 1.5rem;
-            }
-            .profile-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .intro-text h1 {
-                font-size: 2rem;
-            }
-            .bg-layer::before {
-                font-size: 20vw;
-                letter-spacing: 1rem;
-            }
-            .bg-layer::after {
-                font-size: 12vw;
-                letter-spacing: 0.5rem;
-            }
-            .bg-text-1 {
-                font-size: 5vw;
-            }
-            .bg-text-2 {
-                font-size: 3vw;
-            }
-            .bg-text-3 {
-                font-size: 2vw;
-            }
-            .red-packet-modal {
-                width: 300px;
-                max-width: 88vw;
-                border-radius: 20px;
-            }
-            .red-packet-inner {
-                padding: 2rem 1.2rem 1.5rem;
-                min-height: 270px;
-                border-radius: 20px;
-            }
-            .red-packet-pattern {
-                border-radius: 20px;
-            }
-            .red-packet-top-ornament {
-                top: -24px;
-                width: 40px;
-                height: 40px;
-            }
-            .red-packet-open-btn {
-                width: 72px;
-                height: 72px;
-                font-size: 1.8rem;
-            }
-            .red-packet-title {
-                font-size: 1.3rem;
-            }
-            .red-packet-result-amount {
-                font-size: 2.2rem;
-            }
-            .red-packet-close {
-                top: -10px;
-                right: -10px;
-                width: 32px;
-                height: 32px;
-                font-size: 0.85rem;
-            }
-            .time-main {
-                font-size: 1.3rem;
-            }
+        @keyframes glitch-1 {
+            0% { clip: rect(11px, 9999px, 24px, 0); }
+            20% { clip: rect(4px, 9999px, 6px, 0); }
+            40% { clip: rect(32px, 9999px, 45px, 0); }
+            60% { clip: rect(15px, 9999px, 38px, 0); }
+            80% { clip: rect(42px, 9999px, 7px, 0); }
+            100% { clip: rect(24px, 9999px, 31px, 0); }
+        }
+        @keyframes glitch-2 {
+            0% { clip: rect(4px, 9999px, 19px, 0); }
+            20% { clip: rect(22px, 9999px, 3px, 0); }
+            40% { clip: rect(12px, 9999px, 29px, 0); }
+            60% { clip: rect(35px, 9999px, 11px, 0); }
+            80% { clip: rect(8px, 9999px, 41px, 0); }
+            100% { clip: rect(30px, 9999px, 16px, 0); }
+        }
+        /* 小字状态 */
+        .sub-text {
+            color: #88bccc;
+            font-size: 18px;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+        .code-info {
+            color: #ff4466;
+            font-size: 22px;
+            letter-spacing: 1px;
+        }
+        /* 底部闪烁提示 */
+        .flash-tip {
+            margin-top: 30px;
+            color: #ffdd00;
+            animation: flash 1.2s infinite;
+            font-size: 16px;
+        }
+        @keyframes flash {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.2; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-layer">
-        <div class="bg-text-1">MEET IN WINTER</div>
-        <div class="bg-text-2">我愿追溯你的回忆 顺海归南</div>
-        <div class="bg-text-3">IN SEED TIME LEARN · IN HARVEST TEACH · IN WINTER ENJOY</div>
+    <!-- 扫描线 -->
+    <div class="scan-line"></div>
+    <!-- 粒子背景画布 -->
+    <canvas id="particles"></canvas>
+
+    <div class="error-box">
+        <div class="glitch-text" data-text="程序员已关闭该接口">程序员已关闭该接口</div>
+        <div class="sub-text">API CONNECTION TERMINATED</div>
+        <div class="code-info">状态码：503 SERVICE CLOSED</div>
+        <div class="flash-tip">▸ 无法发起请求，请稍后重试 ◂</div>
     </div>
-    <div class="bg-overlay"></div>
 
-    <canvas id="particle-canvas"></canvas>
-
-    <div class="red-packet-overlay" id="redPacketOverlay" aria-hidden="true">
-        <div class="red-packet-modal" id="redPacketModal">
-            <div class="red-packet-top-ornament" aria-hidden="true"></div>
-            <button class="red-packet-close" id="redPacketClose" aria-label="关闭红包">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="red-packet-inner" id="redPacketInner">
-                <div class="red-packet-pattern" aria-hidden="true"></div>
-                <div class="red-packet-gold-border" aria-hidden="true"></div>
-
-                <div class="red-packet-title">🧧 恭喜发财</div>
-                <div class="red-packet-subtitle">点击领取好运红包</div>
-
-                <button class="red-packet-open-btn" id="redPacketOpenBtn" aria-label="打开红包">
-                    開
-                </button>
-
-                <div class="red-packet-result" id="redPacketResult">
-                    <div class="red-packet-result-amount">🧧 好运红包</div>
-                    <div class="red-packet-result-msg">
-                        恭喜你获得隐藏福利！<br>
-                        添加好友获取更多惊喜~
-                    </div>
-                    <a href="javascript:void(0);"
-                    class="red-packet-result-qq"
-                    id="redPacketQQBtn"
-                    aria-label="添加QQ好友">
-                    <i class="fab fa-qq"></i> QQ: 1058542436
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="blog-container">
-    <div class="profile-header">
-        <div class="avatar-section">
-            <div class="avatar"><img src="http://pan.cnmsb.vip/data/img/upload/2026/06/07/dc2be915291cb4767a7ff2e27119390b.jpg" alt="头像"></div>
-            <div class="intro-text">
-                <h1>昊</h1>
-                <div class="intro-text">
-                    <h1>ID:001</h1>
-                    <div class="tagline">
-                        <i class="fas fa-map-pin"></i> 摆烂的程序员
-<i class="fas fa-map-pin"></i> 支持两小时体验
-                        <i class="fas fa-circle" style="font-size: 0.4rem; color: #3b82f6;"></i>
-                        <span>学习中～</span>
-                    </div>
-                    <div class="real-time-box">
-                        <div class="time-main" id="timeMain">00:00:00</div>
-                        <div class="time-date" id="timeDate">2026-01-01 星期一</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="social-links">
-            <a href="javascript:void(0);"
-            aria-label="领取红包"
-            id="qqRedPacketTrigger"
-            title="点击领取红包">
-            <i class="fab fa-qq"></i>
-            <span class="red-dot" aria-hidden="true"></span>
-        </a>
-    </div>
-</div>
-
-<div class="stats-grid">
-    <div class="stat-card"><div class="stat-number">雷达系统</div><div class="stat-label">项目在线用户2000+</div></div>
-    <div class="stat-card"><div class="stat-number">周卡699元</div><div class="stat-label">支持两小时无责体验</div></div>
-    <a href="mqq://im/chat?chat_type=wpa&uin=1058542436" onclick="return openQQ(this.href);" class="stat-card" style="text-decoration:none;">
-        <div class="stat-number">月卡1800元</div>
-        <div class="stat-label">持续稳定</div>
-    </a>
-    <div class="stat-card"><div class="stat-number">定制</div><div class="stat-label">QQ:1058542436</div></div>
-</div>
-<section>
-    <h2 class="section-title"><i class="fas fa-bolt" style="color: #3b82f6;"></i> 售后服务</h2>
-    <div class="posts-grid">
-        <article class="post-card">
-            <div class="post-date"><i class="far fa-calendar-alt"></i> 每天10:00-18:00</div>
-            <h3 class="post-title">粒梅LOM</h3>
-            <p class="post-excerpt">支持退款/使用教程</p>
-            <button class="read-more">处理售后 <i class="fas fa-arrow-right"></i></button>
-        </article>
-    </div>
-</section>
-<section>
-    <h2 class="section-title"><i class="fas fa-bolt" style="color: #3b82f6;"></i> 擅长语言</h2>
-    <div class="posts-grid">
-        <article class="post-card">
-            <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
-            <h3 class="post-title">Java/C++/Python/PHP</h3>
-            <p class="post-excerpt">～</p>
-            <button class="read-more">阅读全部 <i class="fas fa-arrow-right"></i></button>
-        </article>
-        <article class="post-card">
-            <div class="post-date"><i class="far fa-calendar-alt"></i> 2026.06.01</div>
-            <h3 class="post-title">粒梅LOM</h3>
-            <p class="post-excerpt">疑难杂症可直接联系。</p>
-            <button class="read-more">处理 <i class="fas fa-arrow-right"></i></button>
-        </article>
-        <article class="post-card timeline-section">
-            <div class="post-date"><i class="far fa-calendar-alt"></i> 相关经历</div>
-            <div class="timeline-container">
-                <div class="timeline-line"></div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content"><p>2020年在朋友的介绍下第一次接触编程～</p></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content"><p>2021年～</p></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content"><p>2022年学习了～</p></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content"><p>2023年学习了～</p></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content"><p>2024年开发了项目板块。</p></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content"><p>2025年持续稳定项目。</p></div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content"><p>2026年未来将所有项目以最新架构开发</p></div>
-                </div>
-            </div>
-        </article>
-    </div>
-</section>
-
-<section>
-    <h2 class="section-title"><i class="fas fa-cube"></i> 技术</h2>
-    <div class="skills">
-        <span class="skill-tag">Java</span>
-        <span class="skill-tag">C++</span>
-        <span class="skill-tag">PHP</span>
-        <span class="skill-tag">HTML、CSS、JavaScript</span>
-        <span class="skill-tag">Python</span>
-        <span class="skill-tag">Unreal Engine</span>
-        <span class="skill-tag">Kotlin</span>
-        <span class="skill-tag">定制</span>
-        <span class="skill-tag">UI/UX</span>
-    </div>
-</section>
-
-<footer><i class="far fa-copyright"></i> 2026 粒梅LOM ·</footer>
-</div>
-
-<script>
-    function openQQ(url) {
-        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            window.location.href = url;
-        } else {
-            window.open('https://user.qzone.qq.com/1058542436', '_blank');
-        }
-        return false;
-    }
-
-    function updateRealTime() {
-        const now = new Date();
-        const weekArr = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hour = String(now.getHours()).padStart(2, '0');
-        const minute = String(now.getMinutes()).padStart(2, '0');
-        const second = String(now.getSeconds()).padStart(2, '0');
-        const week = weekArr[now.getDay()];
-
-        document.getElementById('timeMain').innerText = `${hour}:${minute}:${second}`;
-        document.getElementById('timeDate').innerText = `${year}-${month}-${day} ${week}`;
-    }
-    updateRealTime();
-    setInterval(updateRealTime, 1000);
-
-    (function() {
-        const overlay = document.getElementById('redPacketOverlay');
-        const modal = document.getElementById('redPacketModal');
-        const inner = document.getElementById('redPacketInner');
-        const openBtn = document.getElementById('redPacketOpenBtn');
-        const resultDiv = document.getElementById('redPacketResult');
-        const closeBtn = document.getElementById('redPacketClose');
-        const trigger = document.getElementById('qqRedPacketTrigger');
-        const qqBtn = document.getElementById('redPacketQQBtn');
-        let isOpened = false;
-        let coinCleanupTimer = null;
-
-        function spawnCoins() {
-            const container = inner;
-            const containerRect = container.getBoundingClientRect();
-            const centerX = containerRect.width / 2;
-            const centerY = containerRect.height / 2;
-            const coinEmojis = ['🪙', '✨', '💰', '🎉', '🧧', '⭐', '💎', '🎊'];
-            const fragment = document.createDocumentFragment();
-
-            for (let i = 0; i < 18; i++) {
-                const coin = document.createElement('span');
-                coin.className = 'coin-particle';
-                coin.textContent = coinEmojis[Math.floor(Math.random() * coinEmojis.length)];
-                coin.style.left = centerX + 'px';
-                coin.style.top = centerY + 'px';
-                coin.style.fontSize = (1 + Math.random() * 1.8) + 'rem';
-
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 60 + Math.random() * 150;
-                const dx = Math.cos(angle) * distance;
-                const dy = Math.sin(angle) * distance - 30 - Math.random() * 80;
-
-                coin.style.setProperty('--dx-30', (dx * 0.3) + 'px');
-                coin.style.setProperty('--dy-30', (dy * 0.3) + 'px');
-                coin.style.setProperty('--dx-70', (dx * 0.7) + 'px');
-                coin.style.setProperty('--dy-70', (dy * 0.7) + 'px');
-                coin.style.setProperty('--dx-end', dx + 'px');
-                coin.style.setProperty('--dy-end', dy + 'px');
-
-                fragment.appendChild(coin);
-            }
-            container.appendChild(fragment);
-
-            if (coinCleanupTimer) clearTimeout(coinCleanupTimer);
-            coinCleanupTimer = setTimeout(() => {
-                const particles = container.querySelectorAll('.coin-particle');
-                particles.forEach(p => p.remove());
-            }, 1400);
-        }
-
-        function openRedPacket() {
-            if (isOpened) return;
-            isOpened = true;
-
-            openBtn.classList.add('opened');
-            spawnCoins();
-
-            setTimeout(() => {
-                openBtn.style.display = 'none';
-                resultDiv.classList.add('show');
-            }, 500);
-        }
-
-        function resetRedPacket() {
-            isOpened = false;
-            openBtn.classList.remove('opened');
-            openBtn.style.display = 'flex';
-            resultDiv.classList.remove('show');
-            const particles = inner.querySelectorAll('.coin-particle');
-            particles.forEach(p => p.remove());
-            if (coinCleanupTimer) clearTimeout(coinCleanupTimer);
-        }
-
-        function showModal() {
-            overlay.classList.add('active');
-            document.body.classList.add('modal-open');
-            resetRedPacket();
-        }
-
-        function hideModal() {
-            overlay.classList.remove('active');
-            document.body.classList.remove('modal-open');
-            setTimeout(resetRedPacket, 400);
-        }
-
-        trigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            showModal();
-        });
-
-        closeBtn.addEventListener('click', hideModal);
-
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                hideModal();
-            }
-        });
-
-        openBtn.addEventListener('click', openRedPacket);
-
-        qqBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openQQ('mqq://im/chat?chat_type=wpa&uin=1058542436');
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && overlay.classList.contains('active')) {
-                hideModal();
-            }
-        });
-    })();
-
-    (function() {
-        const canvas = document.getElementById('particle-canvas');
-        if (!canvas) return;
+    <script>
+        // 粒子背景绘制
+        const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        let animationId;
-        let resizeTimeout;
+        let w, h, particles = [];
 
         function resize() {
-            const dpr = Math.min(window.devicePixelRatio || 1, 2);
-            canvas.width = window.innerWidth * dpr;
-            canvas.height = window.innerHeight * dpr;
-            canvas.style.width = window.innerWidth + 'px';
-            canvas.style.height = window.innerHeight + 'px';
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.scale(dpr, dpr);
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
         }
+        resize();
+        window.addEventListener('resize', resize);
 
-        function createParticles() {
-            const count = Math.min(Math.floor(window.innerWidth * 0.06), 80);
+        // 粒子类
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.r = Math.random() * 1.5 + 0.3;
+                this.speedX = (Math.random() - 0.5) * 0.8;
+                this.speedY = (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.6 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x <0 || this.x>w) this.speedX *= -1;
+                if(this.y <0 || this.y>h) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(0, 240, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+        // 生成粒子
+        function initParticles(num = 120) {
             particles = [];
-            for (let i = 0; i < count; i++) {
-                particles.push({
-                    x: Math.random() * window.innerWidth,
-                    y: Math.random() * window.innerHeight,
-                    radius: Math.random() * 2.5 + 1,
-                    speedX: (Math.random() - 0.5) * 0.6,
-                    speedY: (Math.random() - 0.5) * 0.6,
-                    opacity: Math.random() * 0.5 + 0.1
-                });
+            for(let i=0; i<num; i++) particles.push(new Particle());
+        }
+        initParticles();
+
+        // 连线粒子
+        function drawLine(p1,p2) {
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if(dist < 80) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(0,240,255,${0.3 - dist/300})`;
+                ctx.lineWidth = 0.5;
+                ctx.moveTo(p1.x,p1.y);
+                ctx.lineTo(p2.x,p2.y);
+                ctx.stroke();
             }
         }
 
+        // 动画循环
         function animate() {
-            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-            particles.forEach(p => {
-                p.x += p.speedX;
-                p.y += p.speedY;
-                if (p.x < -10) p.x = window.innerWidth + 10;
-                if (p.x > window.innerWidth + 10) p.x = -10;
-                if (p.y < -10) p.y = window.innerHeight + 10;
-                if (p.y > window.innerHeight + 10) p.y = -10;
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(59,130,246,${p.opacity})`;
-                ctx.fill();
-            });
-
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 110) {
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(59,130,246,${0.06 * (1 - dist / 110)})`;
-                        ctx.lineWidth = 0.6;
-                        ctx.stroke();
-                    }
+            ctx.clearRect(0,0,w,h);
+            particles.forEach(p=>{
+                p.update();
+                p.draw();
+            })
+            // 互相连线
+            for(let i=0; i<particles.length; i++){
+                for(let j=i+1; j<particles.length; j++){
+                    drawLine(particles[i], particles[j]);
                 }
             }
-            animationId = requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
         }
-
-        function handleResize() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                resize();
-                createParticles();
-            }, 200);
-        }
-
-        resize();
-        createParticles();
         animate();
-        window.addEventListener('resize', handleResize);
-    })();
-</script>
+    </script>
 </body>
 </html>
