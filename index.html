@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>充值官网</title>
+    <title>充值系统官网</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
@@ -46,7 +46,7 @@
         body {
             background: linear-gradient(135deg, #f0f8ff 0%, #f7fbff 100%);
             background-attachment: fixed;
-            padding-bottom: 80px;
+            padding-bottom: 30px;
         }
     </style>
 </head>
@@ -71,13 +71,13 @@
             <img src="https://picsum.photos/id/1005/300/300" alt="头像" class="w-full h-full rounded-full object-cover">
         </div>
         <!-- 昵称ID -->
-        <h1 class="text-[48px] font-bold text-gray-800">充值服务</h1>
-        <h2 class="text-[42px] font-bold text-main mb-4">在线充值</h2>
+        <h1 class="text-[48px] font-bold text-gray-800">在线支付</h1>
+        <h2 class="text-[42px] font-bold text-main mb-4">ID:001</h2>
         <!-- 标签 -->
         <div class="flex items-center gap-3 text-gray-600 text-lg mb-4">
-            <span><i class="fa fa-map-marker text-main mr-1"></i>充值</span>
+            <span><i class="fa fa-map-marker text-main mr-1"></i>支付</span>
             <span>•</span>
-            <span>QQ超级会员年费</span>
+            <span>支付宝</span>
         </div>
         <!-- 实时时间 -->
         <div class="text-[32px] text-main text-glow font-mono" id="timeShow">15:17:57</div>
@@ -89,7 +89,7 @@
         </div>
     </div>
 
-    <!-- ========== 新增：充值账号输入框 ========== -->
+    <!-- 充值账号输入框 -->
     <div class="glass rounded-[24px] p-5 mb-6 border border-main/10">
         <label class="text-xl font-medium text-gray-700 block mb-3">
             <i class="fa fa-user text-main mr-2"></i>充值账号（QQ）
@@ -103,30 +103,19 @@
         <p class="text-sm text-gray-400 mt-2">充值前请核对账号，充值成功无法退回</p>
     </div>
 
-    <!-- 充值系统卡片 -->
-    <div class="btn-card glass rounded-[24px] p-6 mb-6 border border-main/10 cursor-pointer" onclick="openPayModal('充值系统', 99)">
-        <h3 class="text-[40px] font-bold text-[#0055bb] text-center">充值系统</h3>
-        <p class="text-gray-500 text-center mt-2 text-lg">项目在线人数2000+</p>
+    <!-- 充值系统卡片（统一86元） -->
+    <div class="btn-card glass rounded-[24px] p-6 mb-6 border border-main/10 cursor-pointer" onclick="openPayModal('充值系统', 86)">
+        <h3 class="text-[40px] font-bold text-[#0055bb] text-center">支付</h3>
+        <p class="text-gray-500 text-center mt-2 text-lg">支付宝</p>
     </div>
 
-    <!-- QQ会员业务卡片 -->
-    <div class="btn-card glass rounded-[24px] p-6 mb-12 border border-main/10 cursor-pointer" onclick="openPayModal('QQ会员业务', 30)">
-        <h3 class="text-[40px] font-bold text-[#0055bb] text-center">申请售后</h3>
-        <p class="text-gray-500 text-center mt-2 text-lg">申请</p>
+    <!-- QQ会员业务卡片（统一86元） -->
+    <div class="btn-card glass rounded-[24px] p-6 mb-12 border border-main/10 cursor-pointer" onclick="openPayModal('QQ会员业务', 86)">
+        <h3 class="text-[40px] font-bold text-[#0055bb] text-center">售后</h3>
+        <p class="text-gray-500 text-center mt-2 text-lg">在线售后</p>
     </div>
 
-    <!-- 底部导航 -->
-    <div class="fixed bottom-0 left-0 right-0 glass py-4 px-8 flex justify-around items-center border-t border-main/10">
-        <i class="fa fa-arrow-left text-gray-600 text-2xl"></i>
-        <i class="fa fa-search text-gray-600 text-2xl"></i>
-        <i class="fa fa-bars text-gray-600 text-2xl relative">
-            <span class="absolute -top-1 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-        </i>
-        <div class="w-8 h-8 border-2 border-gray-600 rounded flex items-center justify-center text-gray-600">29</div>
-        <i class="fa fa-home text-gray-600 text-2xl"></i>
-    </div>
-
-    <!-- 支付宝收款码支付弹窗（匹配你提供的样式） -->
+    <!-- 支付宝收款弹窗 -->
     <div id="payModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-2">
         <div class="w-full max-w-sm overflow-hidden rounded-xl bg-alipayBlue flex flex-col">
             <!-- 顶部蓝色区域 -->
@@ -163,12 +152,10 @@
         // 实时更新时间日期
         function updateTime() {
             const now = new Date();
-            // 时分秒
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('timeShow').innerText = `${h}:${m}:${s}`;
-            // 年月日星期
             const weekArr = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
             const year = now.getFullYear();
             const mon = String(now.getMonth()+1).padStart(2, '0');
@@ -179,12 +166,14 @@
         updateTime();
         setInterval(updateTime, 1000);
 
-        // 支付弹窗控制
+        // 支付信息存储
         let currentPayInfo = {};
+        // 固定你的支付宝收款地址
+        const alipayPayUrl = "https://qr.alipay.com/2m610917a2z7kxjjegecc4d";
+
+        // 打开支付弹窗 + 账号校验
         function openPayModal(name, price) {
-            // 获取填写的充值QQ账号
             const rechargeQQ = document.getElementById('rechargeQQ').value.trim();
-            // 校验账号是否填写
             if(!rechargeQQ){
                 alert("请先输入需要充值的QQ账号！");
                 return;
@@ -192,53 +181,34 @@
             currentPayInfo = { 
                 name, 
                 price,
-                targetQQ: rechargeQQ // 存入充值目标账号
+                targetQQ: rechargeQQ 
             };
             document.getElementById('payModal').classList.remove('hidden');
         }
+
+        // 关闭弹窗
         function closePayModal() {
             document.getElementById('payModal').classList.add('hidden');
         }
 
-        // 支付宝跳转支付接口逻辑
+        // 修复空白跳转逻辑：直接打开网页链接
         function submitAlipay() {
             const { name, price, targetQQ } = currentPayInfo;
-            // 订单参数（携带用户填写的充值账号）
+            // 打印订单日志（可对接后端保存订单）
             const orderData = {
                 adminQQ: "1058542436",
-                rechargeQQ: targetQQ, // 用户输入的充值账号
+                rechargeQQ: targetQQ,
                 productName: name,
                 amount: price,
                 payType: "alipay",
+                payUrl: alipayPayUrl,
                 time: new Date().getTime()
             };
-            console.log("发起支付宝支付请求，订单数据：", orderData);
+            console.log("订单提交记录：", orderData);
 
-            // 移动端唤起支付宝APP
-            const alipayOrderUrl = "alipays://platformapi/startapp?appId=20000067&action=scan";
-            const webPayUrl = "/api/alipay/createOrder";
-
-            // 请求后端生成支付链接
-            fetch(webPayUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(orderData)
-            })
-            .then(res => res.json())
-            .then(res => {
-                if(res.code === 200){
-                    if(/Android|iPhone|iPad/i.test(navigator.userAgent)){
-                        window.location.href = alipayOrderUrl;
-                    }else{
-                        window.open(res.payUrl, "_blank");
-                    }
-                }else{
-                    alert("创建订单失败：" + res.msg);
-                }
-            })
-            .catch(()=>{
-                alert(`订单创建成功！\n充值账号：${targetQQ}\n商品：${name}\n金额：¥${price}.00\n请使用支付宝扫码弹窗内二维码完成付款`);
-            })
+            closePayModal();
+            // 直接新开标签页打开收款链接，不会空白
+            window.open(alipayPayUrl, "_blank");
         }
     </script>
 </body>
